@@ -86,14 +86,29 @@ offers the phone number. Swap in Formspree/Netlify Forms/a PHP endpoint at the
 **Hero — «Η σκιά πέφτει».** Scroll drives four things at once: the glare overlay
 fades out, a cool shade overlay fades in, a hard shadow edge sweeps across the frame
 (`--sweep` on a gradient stop), and the shade photo crossfades over the noon photo.
-The whole effect runs on **two images (~67 KB at mobile size)** — the 5.7 MB Seedance
-scrub video is layered on top only when `HEAVY_MEDIA_OK` passes (≥900px, no
-data-saver, not 2G/3G, ≥4 GB RAM, motion allowed). Phones get the light version,
-because phones are where the calls come from.
 
-Video scrubbing needs **HTTP byte-range support** to seek. The local PowerShell
-preview server doesn't do ranges, so the video is skipped locally and the image
-crossfade runs instead — that is expected, not a bug. Most real hosts support ranges.
+The Higgsfield clip plays back as a **24-frame WebP sequence blitted to a canvas**,
+not as a `<video>`. This is deliberate: scrubbing a video by writing `currentTime`
+forces a seek + decoder flush on every scroll frame, which stutters badly. Frames are
+pre-decoded, so `drawImage` is effectively free. Two sets are built at encode time —
+`assets/frames/w1100` (1.6 MB) and `assets/frames/w640` (0.7 MB) — and the sequence
+only fades in once **every** frame has decoded, over a two-photo crossfade (~67 KB)
+that carries the hero on its own if it never does.
+
+**There is no easing on the scroll value.** Scroll position *is* the input; any lerp
+toward it reads as the picture trailing your finger. Verified: every painted sample
+matches the expected curve with 0.0000 error.
+
+Regenerate the frames (needs `pip install imageio-ffmpeg`):
+
+```bash
+ffmpeg -i assets/_source/hero-shade.mp4 -vf "fps=24/6.04,scale=1100:-2" -vsync 0 -f image2 -c:v libwebp -quality 70 assets/frames/w1100/f%02d.webp
+```
+
+**Preview server.** `serve.py` replaces the PowerShell one because it supports HTTP
+byte ranges (needed by the fabric `<video>`) and correct UTF-8 Greek content types.
+It must be *threading* — a single-threaded `HTTPServer` with HTTP/1.1 keep-alive
+blocks every request after the first.
 
 **Sun slider.** The handle is the sun: it rides a sine arc (highest at midday) and
 the tick labels are positioned at their *true* value percentage, not spaced evenly,
@@ -113,6 +128,23 @@ before ever swapping a face.
 **Accessibility.** Skip link, semantic landmarks, one H1, visible focus rings,
 `prefers-reduced-motion` collapses the sticky hero to a static section and disables
 auto-advance, all tap targets ≥44 px on mobile.
+
+## Bugs found and fixed in the polish pass
+
+| Bug | Cause |
+|---|---|
+| Hero washed out, headline barely legible | Glare hotspot sat at `62% 18%` — directly on the copy (x3–67%, y21–50%) — while the scrim only started at 68%. Moved the hotspot to `84% 4%` and rebuilt the scrim on two axes. |
+| Nav item "Το φως" sat 11px above its siblings | It wrapped to two lines at the space. Added `white-space: nowrap` and raised the burger breakpoint 940→1080px, where the six Greek labels actually fit. |
+| Header phone never hid on mobile, wrapped to 3 lines over the wordmark | `a[href^="tel:"]{display:inline-flex}` (0,1,1) outranked `.header-phone{display:none}` (0,1,0). Fixed with `.header-phone[href^="tel:"]`. |
+| Hero content overflowed the phone viewport | Measured **853px inside 812px**. Tightened the mobile type ramp, stacked CTAs full-width, reserved header space. |
+| Wizard showed the question above "Βήμα 1 από 4" | A `<legend>` is painted at the top of its fieldset regardless of DOM order and ignores `order`. Now an sr-only legend + visible `<p>` + `aria-labelledby`. |
+| Grey dead cell in the product grid | 7 cards never divide into 4/3/2 columns. Hairlines moved from a grid background to per-card borders, and JS spans the last card across leftover tracks. |
+| Eyebrow rule invisible on the repair section | Hard-coded `var(--terra)` on a terracotta background. Now `currentColor`. |
+| Every nav jump buried the section heading | All anchor targets had `scroll-margin-top: 0` under a 71px fixed header. |
+| Sun knob collided with the caption | The knob rides an arc through the upper half; the caption was overlaid top-left. Caption moved below the stage. |
+| Wordmark frame invisible over the hero | SVG `stroke="currentColor"` resolved to ink and never became bone on the dark header. |
+| Fieldsets wouldn't shrink in the grid | UA `min-width: min-content` — the classic fieldset trap. |
+| Preview server hung after one request | Single-threaded `HTTPServer` + HTTP/1.1 keep-alive. Now `ThreadingHTTPServer`. |
 
 **Tooling note.** The **21st.dev connector is not available** in this environment
 (absent from the MCP registry), so every component here is bespoke — same situation

@@ -49,12 +49,24 @@ const heroFrameUrl = (dir, i) =>
 {
   const header = $('#header');
   const bar    = $('#actionbar');
+  const hero   = $('#hero');
+
+  /* The header stays transparent (light type over the dark hero gradient) for
+     the WHOLE shade animation, and only turns solid once the hero has finished
+     and released — a white bar sitting over the cinematic hero kills it.
+     Falls back to a simple offset if the hero is ever absent. */
+  const stickPoint = () => hero
+    ? Math.max(80, hero.offsetHeight - innerHeight - 8)
+    : 80;
+
+  let point = stickPoint();
   const onScroll = () => {
     const y = scrollY;
-    header.classList.toggle('is-stuck', y > 80);
+    header.classList.toggle('is-stuck', y >= point);
     if (bar) bar.classList.toggle('is-visible', y > 420);
   };
   addEventListener('scroll', onScroll, { passive: true });
+  addEventListener('resize', () => { point = stickPoint(); onScroll(); });
   onScroll();
 }
 
