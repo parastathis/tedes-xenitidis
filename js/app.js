@@ -55,8 +55,9 @@ const heroFrameUrl = (dir, i) =>
      the WHOLE shade animation, and only turns solid once the hero has finished
      and released — a white bar sitting over the cinematic hero kills it.
      Falls back to a simple offset if the hero is ever absent. */
+  const sticky = $('.hero__sticky');
   const stickPoint = () => hero
-    ? Math.max(80, hero.offsetHeight - innerHeight - 8)
+    ? Math.max(80, hero.offsetHeight - (sticky ? sticky.offsetHeight : innerHeight) - 8)
     : 80;
 
   let point = stickPoint();
@@ -66,7 +67,15 @@ const heroFrameUrl = (dir, i) =>
     if (bar) bar.classList.toggle('is-visible', y > 420);
   };
   addEventListener('scroll', onScroll, { passive: true });
-  addEventListener('resize', () => { point = stickPoint(); onScroll(); });
+  // width-only: a height-change on mobile is just the URL bar, and recomputing
+  // on it makes the header flicker mid-scroll
+  let lastW = innerWidth;
+  addEventListener('resize', () => {
+    if (innerWidth === lastW) return;
+    lastW = innerWidth;
+    point = stickPoint();
+    onScroll();
+  });
   onScroll();
 }
 
@@ -77,15 +86,22 @@ const heroFrameUrl = (dir, i) =>
   if (btn && menu) {
     let lastY = 0;
 
+    const releaseLock = () => {
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      /* MUST be instant. `html { scroll-behavior: smooth }` makes a bare
+         scrollTo() animate, so this restore was still running when the anchor
+         scroll started; the two cancelled each other and dumped you at the
+         top of the page. */
+      scrollTo({ top: lastY, behavior: 'instant' });
+    };
+
     const close = ({ restoreFocus = false } = {}) => {
       if (!document.body.classList.contains('nav-open')) return;
       document.body.classList.remove('nav-open');
       btn.setAttribute('aria-expanded', 'false');
-      // release the scroll lock and put the page back exactly where it was
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      scrollTo(0, lastY);
+      releaseLock();
       if (restoreFocus) btn.focus();
     };
 
@@ -103,7 +119,24 @@ const heroFrameUrl = (dir, i) =>
     btn.addEventListener('click', () =>
       document.body.classList.contains('nav-open') ? close({ restoreFocus: true }) : open());
 
-    $$('#mobileNav a').forEach(a => a.addEventListener('click', () => close()));
+    /* Anchor links need the scroll lock released BEFORE the jump is computed.
+       With body still position:fixed the document is collapsed, so the browser's
+       native jump landed at the top of the page instead of the section. We
+       release the lock, then drive the scroll ourselves on the next frame. */
+    $$('#mobileNav a').forEach(a => a.addEventListener('click', e => {
+      const href = a.getAttribute('href') || '';
+      const dest = href.startsWith('#') && href.length > 1 ? $(href) : null;
+      if (!dest) { close(); return; }
+      e.preventDefault();
+      document.body.classList.remove('nav-open');
+      btn.setAttribute('aria-expanded', 'false');
+      releaseLock();          // synchronous: body is un-fixed and layout is settled
+      // Done inline rather than in rAF — on a busy main thread the deferred
+      // callback can land a frame or more late, after the user has moved on.
+      dest.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth', block: 'start' });
+      if (history.replaceState) history.replaceState(null, '', href);
+    }));
+
     addEventListener('keydown', e => e.key === 'Escape' && close({ restoreFocus: true }));
 
     // keep tab focus inside the drawer while it is open
@@ -116,8 +149,9 @@ const heroFrameUrl = (dir, i) =>
       else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
     });
 
-    // if the drawer is open and the viewport grows past the breakpoint, clean up
-    matchMedia('(min-width: 941px)').addEventListener('change', e => e.matches && close());
+    // if the drawer is open and the viewport grows past the burger breakpoint,
+    // clean up (must match the 1080px breakpoint in the stylesheet)
+    matchMedia('(min-width: 1081px)').addEventListener('change', e => e.matches && close());
   }
 }
 
@@ -201,9 +235,14 @@ const heroFrameUrl = (dir, i) =>
     /* Scroll position IS the input — no easing/lerp toward it. Any smoothing
        here reads as lag, because the picture trails the finger. We just batch
        into one rAF per scroll burst and paint the exact scroll state. */
+    /* Travel is measured against the sticky child, NOT innerHeight. Both the
+       section and the sticky are sized in svh, so this stays constant while a
+       mobile URL bar slides in and out — using innerHeight made the whole
+       scrub rescale mid-gesture, which is what made scrolling feel broken. */
+    const stickyEl = $('.hero__sticky');
     const measure = () => {
       const rect = hero.getBoundingClientRect();
-      const travel = hero.offsetHeight - innerHeight;
+      const travel = hero.offsetHeight - (stickyEl ? stickyEl.offsetHeight : innerHeight);
       target = travel > 0 ? clamp(-rect.top / travel, 0, 1) : 0;
       if (!ticking) { ticking = true; requestAnimationFrame(render); }
     };

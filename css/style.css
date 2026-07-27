@@ -64,7 +64,12 @@ body {
   background: var(--bone);
   font-feature-settings: "kern" 1;
   -webkit-font-smoothing: antialiased;
+  /* `hidden` makes <body> a scroll container (overflow-y resolves to auto),
+     which destabilises position:sticky and causes scroll-chaining glitches on
+     mobile. `clip` suppresses the same overflow WITHOUT creating one.
+     `hidden` stays first as the fallback for old engines. */
   overflow-x: hidden;
+  overflow-x: clip;
 }
 
 h1, h2, h3, h4 {
@@ -296,7 +301,13 @@ legend { padding: 0; display: block; }
    HERO — «Η σκιά πέφτει»
    Scroll-scrubbed: noon glare → awning unfurls → shadow sweeps → colour returns
    ========================================================================== */
-.hero { position: relative; height: 200vh; background: var(--ink); }
+/* svh on BOTH, deliberately. Mixing `vh` here with `svh` on the sticky meant
+   that on a real phone the section was sized to the URL-bar-hidden viewport
+   while its child was sized to the URL-bar-shown one — so every time the bar
+   slid away the layout resized mid-scroll and the scrub jumped. svh never
+   changes as the bar moves, so the scroll stays glued. When the bar does
+   retract, the extra strip revealed below is the hero's own dark background. */
+.hero { position: relative; height: 200vh; height: 200svh; background: var(--ink); }
 .hero__sticky {
   position: sticky; top: 0; height: 100vh; height: 100svh;
   overflow: hidden; display: grid; place-items: end stretch;
