@@ -197,6 +197,13 @@ legend { padding: 0; display: block; }
 .btn--on-dark:hover { --btn-bg: var(--bone); --btn-fg: var(--ink); }
 .btn--primary { --btn-bg: var(--wine); --btn-fg: var(--marble); }
 .btn--primary:hover { --btn-bg: var(--wine-soft); }
+/* The offset edge is the whole point of these buttons, and a black one is
+   invisible on the dark panels — every wine button sitting on ink or on the
+   hero photo gets a bone edge instead. .btn--on-dark keeps its brass. */
+.hero .btn:not(.btn--on-dark),
+.section--ink .btn:not(.btn--on-dark),
+.quote .btn:not(.btn--on-dark),
+.repair .btn:not(.btn--on-dark) { --btn-shadow: var(--bone); }
 .btn--lg { padding: 1.2rem 2.3rem; font-size: var(--step-1); }
 .btn[disabled] { opacity: .35; pointer-events: none; }
 
