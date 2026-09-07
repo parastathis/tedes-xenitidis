@@ -43,6 +43,11 @@
 
   --olive:      #5C6B34;
 
+  /* the neobrutalist edge: hard border, hard offset shadow, no blur */
+  --edge-radius: 5px;
+  --edge-x: 4px;
+  --edge-y: 4px;
+
   --line:       color-mix(in srgb, var(--ink) 14%, transparent);
   --line-soft:  color-mix(in srgb, var(--ink) 8%, transparent);
   --line-brass: color-mix(in srgb, var(--brass) 42%, transparent);
@@ -161,43 +166,40 @@ legend { padding: 0; display: block; }
    other sections use the plain .actions so they don't inherit it. */
 .actions { display: flex; flex-wrap: wrap; gap: .85rem; }
 
+/* Buttons are neobrutalist: a hard 2px edge and a solid offset shadow with no
+   blur, and pressing one moves it onto its own shadow instead of lifting it.
+   Same geometry everywhere — only the colours change per surface. */
 .btn {
   --btn-bg: var(--wine);
   --btn-fg: var(--marble);
+  --btn-edge: var(--ink);
+  --btn-shadow: var(--ink);
   display: inline-flex; align-items: center; justify-content: center; gap: .6rem;
-  padding: 1.05rem 1.9rem;
+  padding: 1rem 1.85rem;
   background: var(--btn-bg); color: var(--btn-fg);
-  border: 0; border-radius: 2px;
+  border: 2px solid var(--btn-edge); border-radius: var(--edge-radius);
+  box-shadow: var(--edge-x) var(--edge-y) 0 0 var(--btn-shadow);
   font-weight: 700; font-size: var(--step-0); letter-spacing: .01em;
   text-decoration: none; cursor: pointer;
-  position: relative; overflow: hidden; isolation: isolate;
-  transition: transform .35s var(--ease), box-shadow .35s var(--ease);
+  transition: transform .18s var(--ease), box-shadow .18s var(--ease), background .3s var(--ease);
 }
-/* the "awning unrolls" hover — a shade sweeps down over the button */
-.btn::after {
-  content: ""; position: absolute; inset: 0; z-index: -1;
-  background: var(--btn-hover, var(--wine-deep));
-  transform: translateY(-101%);
-  transition: transform .45s var(--ease);
+.btn:hover, .btn:focus-visible {
+  transform: translate(var(--edge-x), var(--edge-y));
+  box-shadow: 0 0 0 0 var(--btn-shadow);
 }
-.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -12px rgba(22,21,26,.6); }
-.btn:hover::after { transform: translateY(0); }
-.btn:active { transform: translateY(0); }
+.btn:active { transform: translate(var(--edge-x), var(--edge-y)); }
 
-.btn--ghost {
-  --btn-bg: transparent; --btn-fg: var(--ink);
-  --btn-hover: var(--ink);
-  box-shadow: inset 0 0 0 1.5px var(--line);
+.btn--ghost { --btn-bg: var(--marble); --btn-fg: var(--ink); }
+.btn--ghost:hover { --btn-bg: var(--bone-2); }
+/* on the dark panels a black shadow would be invisible — brass carries it */
+.btn--on-dark {
+  --btn-bg: transparent; --btn-fg: var(--bone);
+  --btn-edge: var(--bone); --btn-shadow: var(--brass);
 }
-.btn--ghost:hover { --btn-fg: var(--bone); color: var(--bone); }
-.btn--on-dark { --btn-bg: transparent; --btn-fg: var(--bone); --btn-hover: var(--bone); box-shadow: inset 0 0 0 1.5px rgba(250,245,233,.32); }
-.btn--on-dark:hover { color: var(--ink); }
-.btn--primary {
-  --btn-bg: var(--wine); --btn-fg: var(--marble); --btn-hover: var(--wine-deep);
-  box-shadow: inset 0 0 0 1px var(--line-brass);
-}
-.btn--primary:hover { box-shadow: inset 0 0 0 1px var(--brass), 0 10px 24px -12px rgba(22,21,26,.6); }
-.btn--lg { padding: 1.25rem 2.4rem; font-size: var(--step-1); }
+.btn--on-dark:hover { --btn-bg: var(--bone); --btn-fg: var(--ink); }
+.btn--primary { --btn-bg: var(--wine); --btn-fg: var(--marble); }
+.btn--primary:hover { --btn-bg: var(--wine-soft); }
+.btn--lg { padding: 1.2rem 2.3rem; font-size: var(--step-1); }
 .btn[disabled] { opacity: .35; pointer-events: none; }
 
 /* --------------------------------------------------------- header */
@@ -259,37 +261,66 @@ legend { padding: 0; display: block; }
      themselves out of alignment with the rest of the row */
   white-space: nowrap;
 }
-.site-nav a::after {
-  content: ""; position: absolute; left: 0; bottom: 0; height: 2px; width: 100%;
-  background: var(--brass); transform: scaleX(0); transform-origin: right;
-  transition: transform .45s var(--ease);
+/* nav links pick up the same hard edge on hover — the label sits into a
+   bordered chip and presses onto its shadow, exactly like the buttons */
+.site-nav a {
+  padding: .34rem .6rem; border-radius: var(--edge-radius);
+  border: 2px solid transparent;
+  transition: color .3s var(--ease), background .2s var(--ease),
+              border-color .2s var(--ease), box-shadow .18s var(--ease), transform .18s var(--ease);
 }
-.site-nav a:hover::after { transform: scaleX(1); transform-origin: left; }
+.site-nav a:hover, .site-nav a:focus-visible {
+  background: var(--bone); color: var(--ink);
+  border-color: var(--ink);
+  box-shadow: 3px 3px 0 0 var(--brass);
+  transform: translate(-1px, -1px);
+}
 .is-stuck .site-nav a { color: var(--ink); }
-.is-stuck .site-nav a::after { background: var(--wine); }
+.is-stuck .site-nav a:hover, .is-stuck .site-nav a:focus-visible {
+  background: var(--wine); color: var(--marble); border-color: var(--ink);
+  box-shadow: 3px 3px 0 0 var(--ink);
+}
 
 .header-phone {
   font-variant-numeric: tabular-nums;
   display: inline-flex; align-items: center; gap: .5rem;
-  font-family: var(--display); font-size: 1.5rem; font-weight: 800;
+  flex: none; white-space: nowrap;
+  padding: .42rem .8rem; border-radius: var(--edge-radius);
+  border: 2px solid var(--bone); box-shadow: 3px 3px 0 0 var(--brass);
+  font-family: var(--display); font-size: 1.4rem; font-weight: 800;
   letter-spacing: .01em; text-decoration: none; color: var(--bone);
-  transition: color .4s var(--ease);
+  transition: color .3s var(--ease), background .3s var(--ease),
+              border-color .3s var(--ease), transform .18s var(--ease), box-shadow .18s var(--ease);
 }
-.is-stuck .header-phone { color: var(--ink); }
+.header-phone:hover, .header-phone:focus-visible {
+  background: var(--bone); color: var(--ink);
+  transform: translate(3px, 3px); box-shadow: 0 0 0 0 var(--brass);
+}
+.is-stuck .header-phone { color: var(--ink); border-color: var(--ink); box-shadow: 3px 3px 0 0 var(--wine); }
+.is-stuck .header-phone:hover { background: var(--wine); color: var(--marble); box-shadow: 0 0 0 0 var(--wine); }
 .header-phone svg { width: 17px; height: 17px; }
 
 .nav-toggle { display: none; }
 
-/* The six Greek labels + the phone number need ~1080px to sit comfortably.
-   Below that we switch to the burger rather than let the row crowd or wrap. */
-@media (max-width: 1080px) {
+/* The seven Greek labels + the phone number need ~1240px now that both wear a
+   bordered chip. Below that we switch to the burger rather than let the row
+   crowd, wrap or run off the right edge. */
+@media (max-width: 1240px) {
   .site-nav { display: none; }
   .header-phone { margin-left: auto; }
   .nav-toggle {
     display: inline-flex; align-items: center; gap: .55rem; margin-left: .9rem;
-    background: none; border: 0; cursor: pointer; padding: .5rem;
+    cursor: pointer; padding: .6rem .85rem;
+    background: var(--bone); color: var(--ink);
+    border: 2px solid var(--ink); border-radius: var(--edge-radius);
+    box-shadow: var(--edge-x) var(--edge-y) 0 0 var(--wine);
     font-weight: 700; font-size: var(--step--1); letter-spacing: .12em;
-    text-transform: uppercase; color: var(--bone);
+    text-transform: uppercase;
+    transition: transform .18s var(--ease), box-shadow .18s var(--ease);
+  }
+  .nav-toggle:hover, .nav-toggle:focus-visible, .nav-open .nav-toggle {
+    transform: translate(var(--edge-x), var(--edge-y));
+    box-shadow: 0 0 0 0 var(--wine);
   }
   .is-stuck .nav-toggle { color: var(--ink); }
   .nav-toggle__bars { display: grid; gap: 4px; width: 22px; }
@@ -1003,72 +1034,64 @@ legend { padding: 0; display: block; }
   padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
 }
 
-/* the drawn map ------------------------------------------------------------ */
+/* the route diagram -------------------------------------------------------- */
+/* Not a map: no land, no border, no compass. Just the dots and the walk
+   between them, running the full width of the screen. */
 .areamap {
-  margin-top: 1.75rem; border-radius: 4px;
-  background: var(--bone); box-shadow: inset 0 0 0 1px var(--line);
-  padding: clamp(.6rem, 2vw, 1.4rem);
+  margin-top: clamp(2rem, 5vw, 3.5rem);
+  padding-inline: clamp(1rem, 4vw, 3rem);
 }
 .areamap__svg { display: block; width: 100%; height: auto; }
-.areamap__land {
-  fill: var(--bone-2); stroke: var(--line-brass); stroke-width: .35;
-  stroke-dasharray: 2.2 1.6; stroke-linecap: round;
-}
 .areamap__trails path { fill: none; stroke: none; }
 
-.areamap__step { fill: var(--brass-deep); opacity: 0; }
-/* the prints land one after another, hold, then lift — and the wave repeats,
-   so there is always someone walking out to a job */
+.areamap__step { fill: var(--ink); opacity: 0; }
+/* Each route draws itself print by print, holds while the rest catch up, then
+   clears and goes again — the way a flight map redraws its paths. */
 .areamap.is-walking .areamap__step {
-  animation: footWalk 3.6s linear var(--d, 0ms) infinite;
+  animation: footWalk 5s linear var(--d, 0ms) infinite;
 }
 @keyframes footWalk {
   0%   { opacity: 0; }
-  6%   { opacity: .72; }
-  46%  { opacity: .72; }
-  70%  { opacity: 0; }
+  4%   { opacity: .88; }
+  62%  { opacity: .88; }
+  76%  { opacity: 0; }
   100% { opacity: 0; }
 }
 
-.areamap__pin { opacity: 0; }
-.areamap.is-in .areamap__pin { animation: pinIn .45s var(--ease) var(--d, 0ms) forwards; }
-@keyframes pinIn { from { opacity: 0; } to { opacity: 1; } }
-.areamap__pin circle { fill: var(--brass-deep); }
-.areamap__pin.is-hub circle { fill: var(--wine); }
+/* every dot black — the workshop is simply the bigger one, with a pulse */
+.areamap__pin circle { fill: var(--ink); }
 .areamap__halo {
-  fill: none !important; stroke: var(--wine); stroke-width: .4; opacity: .45;
+  fill: none !important; stroke: var(--ink); stroke-width: .35; opacity: .4;
   transform-box: fill-box; transform-origin: 50% 50%;
   animation: haloOut 2.6s var(--ease-io) infinite;
 }
-@keyframes haloOut { 0% { opacity: .5; scale: .55; } 100% { opacity: 0; scale: 1.15; } }
+@keyframes haloOut { 0% { opacity: .45; scale: .55; } 100% { opacity: 0; scale: 1.15; } }
+/* names are painted with a fat stroke of the page colour underneath, so a
+   passing trail is knocked out behind the letters instead of tangling in them */
+.areamap__label, .areamap__sub {
+  paint-order: stroke fill;
+  stroke: var(--marble); stroke-width: 1.5px; stroke-linejoin: round;
+}
 .areamap__label {
   fill: var(--ink); font-family: var(--display); font-weight: 800;
-  font-size: 3.1px; letter-spacing: .02em;
+  font-size: 2.9px; letter-spacing: .02em;
 }
-.areamap__pin.is-hub .areamap__label { font-size: 3.9px; fill: var(--wine); }
+.areamap__pin.is-hub .areamap__label { font-size: 3.8px; }
 .areamap__sub {
-  fill: var(--ink-3); font-family: var(--body); font-size: 2.2px;
-  letter-spacing: .06em; text-transform: uppercase;
+  fill: var(--ink-3); font-family: var(--body); font-size: 2px;
+  letter-spacing: .08em; text-transform: uppercase;
 }
-.areamap__rose { opacity: 0; }
-.areamap.is-in .areamap__rose { animation: pinIn .5s var(--ease) var(--d, 0ms) forwards; }
-.areamap__rose circle { fill: none; stroke: var(--line-brass); stroke-width: .35; }
-.areamap__needle { fill: var(--brass); }
-.areamap__north {
-  fill: var(--ink-3); font-family: var(--display); font-weight: 800; font-size: 2.8px;
-}
-/* on a phone the map is half the width, so the type has to grow against it */
-@media (max-width: 620px) {
-  .areamap__label { font-size: 4.2px; }
-  .areamap__pin.is-hub .areamap__label { font-size: 5px; }
-  .areamap__sub { font-size: 2.9px; }
-  .areamap__north { font-size: 3.6px; }
+/* portrait layout on phones: the viewBox is 100 tall instead of 52, so every
+   unit is worth about half as much on screen — the type has to grow to match */
+@media (max-width: 720px) {
+  .areamap__label { font-size: 4.4px; }
+  .areamap__pin.is-hub .areamap__label { font-size: 5.4px; }
+  .areamap__sub { font-size: 3px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  /* no walking loop — the trails simply sit there, fully drawn */
-  .areamap__pin, .areamap__rose { opacity: 1; }
-  .areamap__step { opacity: .72; animation: none; }
-  .areamap__halo { animation: none; opacity: .35; }
+  /* no walking loop — the routes simply sit there, fully drawn */
+  .areamap__step { opacity: .85; animation: none; }
+  .areamap__halo { animation: none; opacity: .3; }
 }
 
 /* ==========================================================================
@@ -1158,9 +1181,13 @@ legend { padding: 0; display: block; }
 .contact__map {
   aspect-ratio: 4 / 3; border-radius: 3px; overflow: hidden;
   background: var(--ink-2); box-shadow: 0 30px 60px -35px rgba(22,21,26,.8);
-  filter: saturate(.7) brightness(.92); transition: filter .6s var(--ease);
 }
-.contact__map:hover { filter: none; }
+/* OSM ships one light basemap. Inverting the lightness (and spinning the hue
+   back so nothing turns cyan) makes a dark map out of it — applied to the tile
+   pane only, so the pin, popup and controls keep their real colours. */
+.contact__map .leaflet-tile-pane {
+  filter: invert(1) hue-rotate(180deg) grayscale(.62) brightness(.94) contrast(1.04);
+}
 .contact__map .leaflet-container { background: var(--ink-2); font-family: var(--body); }
 /* the no-map fallback: the address, still useful, still clickable */
 .contact__map--flat { filter: none; display: grid; }

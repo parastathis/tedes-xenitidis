@@ -603,34 +603,34 @@ const GALLERY = [
   const host = $('#areamap');
   const list = $('#areasList');
   if (host && list) {
-    const pts = $$('.areas__chip', list).map(c => ({
-      name: c.textContent.trim(),
-      x: +c.dataset.x, y: +c.dataset.y,
-      hub: 'hub' in c.dataset
-    }));
-    const hub = pts.find(p => p.hub);
+    const chips = $$('.areas__chip', list);
+    const NS = 'http://www.w3.org/2000/svg';
+    const el = (tag, attrs = {}) => {
+      const n = document.createElementNS(NS, tag);
+      for (const k in attrs) n.setAttribute(k, attrs[k]);
+      return n;
+    };
+    const narrow = () => matchMedia('(max-width: 720px)').matches;
 
-    if (hub && pts.length > 1) {
-      const NS = 'http://www.w3.org/2000/svg';
-      const el = (tag, attrs = {}) => {
-        const n = document.createElementNS(NS, tag);
-        for (const k in attrs) n.setAttribute(k, attrs[k]);
-        return n;
-      };
+    const draw = () => {
+      const tall = narrow();
+      const pts = chips.map(c => ({
+        name: c.textContent.trim(),
+        x: +(tall ? c.dataset.mx : c.dataset.x),
+        y: +(tall ? c.dataset.my : c.dataset.y),
+        hub: 'hub' in c.dataset
+      }));
+      const hub = pts.find(p => p.hub);
+      if (!hub || pts.length < 2) return;
 
+      host.textContent = '';
       const svg = el('svg', {
-        viewBox: '-5 -3 110 80', class: 'areamap__svg',
-        'aria-hidden': 'true', focusable: 'false', preserveAspectRatio: 'xMidYMid meet'
+        viewBox: tall ? '-8 -8 116 116' : '-6 -8 112 68',
+        class: 'areamap__svg', 'aria-hidden': 'true', focusable: 'false',
+        preserveAspectRatio: 'xMidYMid meet'
       });
 
-      /* the ground: one wobbly blob, drawn by hand rather than traced */
-      svg.append(el('path', {
-        class: 'areamap__land',
-        d: 'M8 26 C10 12 26 2 44 5 C58 7 66 2 78 6 C92 11 98 24 94 38'
-         + ' C90 52 96 62 84 68 C70 75 52 70 38 72 C22 74 8 66 6 52 C4 42 6 34 8 26 Z'
-      }));
-
-      /* one shoe print — sole and heel — reused for every step on the map.
+      /* one shoe print — sole and heel — reused for every step.
          The toe points along local -y, so a step rotates by its heading + 90°. */
       const defs = el('defs');
       const foot = el('g', { id: 'kfoot' });
@@ -639,85 +639,107 @@ const GALLERY = [
       defs.append(foot);
       svg.append(defs);
 
-      const trails = el('g', { class: 'areamap__trails' });
+      const guides = el('g', { class: 'areamap__trails' });
       const steps  = el('g', { class: 'areamap__steps' });
       const pins   = el('g', { class: 'areamap__pins' });
-      svg.append(trails, steps, pins);
-      host.append(svg);                       // must be live to measure the paths
+      svg.append(guides, steps, pins);
+      host.append(svg);                        // must be live to measure the paths
 
-      const addPin = (p, delay) => {
+      /* Labels sit on the far side of their dot, pointing away from the
+         workshop. Every route arrives from the hub side, so the name is never
+         in the way of its own trail. */
+      const addPin = p => {
         const g = el('g', { class: 'areamap__pin' + (p.hub ? ' is-hub' : '') });
-        g.style.setProperty('--d', delay + 'ms');
-        g.append(el('circle', { cx: p.x, cy: p.y, r: p.hub ? 2.5 : 1.5 }));
-        if (p.hub) g.append(el('circle', { class: 'areamap__halo', cx: p.x, cy: p.y, r: 4.4 }));
-        const label = el('text', { class: 'areamap__label', x: p.x, y: p.y + (p.hub ? 6.6 : 5.4), 'text-anchor': 'middle' });
+        g.append(el('circle', { cx: p.x, cy: p.y, r: p.hub ? 2.2 : 1.35 }));
+        if (p.hub) g.append(el('circle', { class: 'areamap__halo', cx: p.x, cy: p.y, r: 4.2 }));
+
+        let ux = 0, uy = 1;                       // the hub's own name goes below
+        if (!p.hub) {
+          const dx = p.x - hub.x, dy = p.y - hub.y;
+          const m = Math.hypot(dx, dy) || 1;
+          ux = dx / m; uy = dy / m;
+        }
+        /* Side-set labels need horizontal room, which a phone hasn't got — the
+           westmost name ran off the edge. In the portrait layout every name
+           goes above or below its dot instead, where the space actually is. */
+        const sideways = !tall && Math.abs(ux) > .55;
+        const label = el('text', {
+          class: 'areamap__label',
+          x: (p.x + ux * (sideways ? 2.8 : 1.4)).toFixed(2),
+          y: (p.y + uy * 3.4 + (sideways ? 1.1 : uy > 0 ? 3.4 : -2.2)).toFixed(2),
+          'text-anchor': sideways ? (ux > 0 ? 'start' : 'end') : 'middle'
+        });
         label.textContent = p.name;
         g.append(label);
         if (p.hub) {
-          const sub = el('text', { class: 'areamap__sub', x: p.x, y: p.y + 10.2, 'text-anchor': 'middle' });
+          const sub = el('text', { class: 'areamap__sub', x: p.x, y: p.y + 10.4, 'text-anchor': 'middle' });
           sub.textContent = 'το εργαστήριο';
           g.append(sub);
         }
         pins.append(g);
       };
 
-      let slowest = 0;
+      /* Pins go down first, so their labels can be measured — the prints have
+         to route around real text boxes, not guesses at where the text is. */
+      pts.forEach(addPin);
+
+      /* Only the dots are hard obstacles. Names no longer need cutting a route
+         in half: they sit on the far side of their own dot, and they carry a
+         knock-out halo, so a trail that does pass one reads as going behind it. */
+      const dots = pts.map(p => ({ x: p.x, y: p.y, r: (p.hub ? 2.8 : 1.9) }));
+      const blocked = (x, y) => dots.some(d => Math.hypot(x - d.x, y - d.y) < d.r);
+
+      /* Routes, drawn the way a flight map draws them: a curve out of the hub
+         to each destination, walked print by print. */
+      const CLEAR_HUB = 5.2, CLEAR_END = 5.6, GAP = 3.1;
       pts.filter(p => !p.hub).forEach((p, k) => {
-        /* a lazy curve, not a ruled line — alternate the bend so the trails fan
-           out of the workshop instead of stacking on top of each other */
         const dx = p.x - hub.x, dy = p.y - hub.y;
         const len = Math.hypot(dx, dy) || 1;
-        const bend = (k % 2 ? 1 : -1) * len * 0.16;
+        const bend = (k % 2 ? 1 : -1) * len * 0.15;
         const cx = (hub.x + p.x) / 2 + (-dy / len) * bend;
         const cy = (hub.y + p.y) / 2 + (dx / len) * bend;
         const path = el('path', { d: `M${hub.x} ${hub.y} Q${cx.toFixed(2)} ${cy.toFixed(2)} ${p.x} ${p.y}` });
-        trails.append(path);
+        guides.append(path);
 
-        /* walk the curve, stamping alternating left/right prints along it */
         const total = path.getTotalLength();
-        const GAP = 3.1;
         let n = 0;
-        for (let d = GAP; d < total - 3.2; d += GAP, n++) {
+        for (let d = CLEAR_HUB; d < total - CLEAR_END; d += GAP, n++) {
           const a = path.getPointAtLength(d);
           const b = path.getPointAtLength(Math.min(d + 1, total));
           const ang = Math.atan2(b.y - a.y, b.x - a.x);
-          const side = (n % 2 ? 1 : -1) * .92;      // left foot, right foot
+          const side = (n % 2 ? 1 : -1) * .9;    // left foot, right foot
+          const fx = a.x + Math.cos(ang + Math.PI / 2) * side;
+          const fy = a.y + Math.sin(ang + Math.PI / 2) * side;
+          if (blocked(fx, fy)) continue;         // step over a name, not on it
           const mark = el('use', {
             class: 'areamap__step', href: '#kfoot',
-            transform: `translate(${(a.x + Math.cos(ang + Math.PI / 2) * side).toFixed(2)} `
-                     + `${(a.y + Math.sin(ang + Math.PI / 2) * side).toFixed(2)}) `
+            transform: `translate(${fx.toFixed(2)} ${fy.toFixed(2)}) `
                      + `rotate(${(ang * 180 / Math.PI + 90).toFixed(1)})`
           });
-          // stagger by distance walked, so every trail leaves the shop at once
-          mark.style.setProperty('--d', (n * 52) + 'ms');
+          // stagger by distance walked, so every route leaves the shop at once
+          mark.style.setProperty('--d', (n * 60) + 'ms');
           steps.append(mark);
         }
-        const arrival = n * 52 + 140;
-        slowest = Math.max(slowest, arrival);
-        addPin(p, arrival);                    // the pin lands as the walk reaches it
       });
+    };
 
-      addPin(hub, 0);
+    draw();
+    list.classList.add('is-mapped');            // stays for AT, leaves the layout
 
-      /* the compass, because every drawn map has one */
-      const rose = el('g', { class: 'areamap__rose' });
-      rose.style.setProperty('--d', (slowest + 120) + 'ms');
-      rose.append(el('circle', { cx: 93, cy: 63, r: 5.4 }));
-      rose.append(el('path', { class: 'areamap__needle', d: 'M93 58.4 L95 63.6 L93 62.4 L91 63.6 Z' }));
-      const n = el('text', { class: 'areamap__north', x: 93, y: 70.4, 'text-anchor': 'middle' });
-      n.textContent = 'Β';
-      rose.append(n);
-      svg.append(rose);
+    /* redraw only when we actually cross the layout breakpoint */
+    let wasNarrow = narrow();
+    addEventListener('resize', () => {
+      if (narrow() === wasNarrow) return;
+      wasNarrow = narrow();
+      draw();
+    });
 
-      list.classList.add('is-mapped');          // stays for AT, leaves the layout
-
-      /* The walk runs on a loop — someone is always on their way out to a job.
-         It only ticks while the map is actually on screen, same as the video
-         loops: an animation nobody is looking at is just spent battery. */
-      new IntersectionObserver(([en]) => {
-        host.classList.toggle('is-walking', en.isIntersecting && motionOK());
-      }, { threshold: .12 }).observe(host);
-    }
+    /* The walk runs on a loop — someone is always on their way out to a job.
+       It only ticks while the diagram is on screen, same as the video loops:
+       an animation nobody is looking at is just spent battery. */
+    new IntersectionObserver(([en]) => {
+      host.classList.toggle('is-walking', en.isIntersecting && motionOK());
+    }, { threshold: .08 }).observe(host);
   }
 }
 
@@ -912,13 +934,17 @@ const FAQ = [
         attributionControl: false, zoomControl: false
       });
       // Leaflet's own "Leaflet" prefix is a courtesy, not a licence term (BSD-2),
-      // so it goes; the OSM/CARTO credit below is the part that must stay.
+      // so it goes; the OSM credit below is the part that must stay.
       L.control.attribution({ position: 'bottomright', prefix: false })
-        .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>')
+        .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>')
         .addTo(map);
       L.control.zoom({ position: 'bottomright' }).addTo(map);
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        subdomains: 'abcd', maxZoom: 19
+      /* Plain OSM tiles. CARTO's dark basemap was serving a 200 OK PNG with
+         "API KEY REQUIRED" stamped across the image itself — it looked like a
+         working map to every status check and like a broken one to every human.
+         OSM needs no key; the dark treatment is done in CSS on the tile pane. */
+      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19
       }).addTo(map);
 
       const pin = L.divIcon({

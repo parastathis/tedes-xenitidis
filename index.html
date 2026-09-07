@@ -617,24 +617,30 @@
         Το εργαστήριο είναι στη Μαικήνα 82. Όσο πιο κοντά είσαι, τόσο πιο γρήγορα ερχόμαστε
         για μέτρηση — και τόσο πιο εύκολα επιστρέφουμε αν χρειαστεί κάτι μετά.
       </p>
-      <!-- The chips carry the coordinates; JS reads them and draws the map,
-           then hides this list to screen readers' benefit only. Without JS the
+      <!-- The chips carry the coordinates — data-x/y for the wide layout,
+           data-mx/my for the portrait one on phones. JS reads them, draws the
+           route diagram and hides this list from view only. Without JS the
            chips stay exactly as they were. -->
       <ul class="areas__list" id="areasList">
-        <li><span class="areas__chip areas__chip--primary" data-x="53" data-y="41" data-hub>Ζωγράφου</span></li>
-        <li><span class="areas__chip" data-x="37" data-y="30">Άνω Ιλίσια</span></li>
-        <li><span class="areas__chip" data-x="25" data-y="42">Ιλίσια</span></li>
-        <li><span class="areas__chip" data-x="42" data-y="19">Γουδή</span></li>
-        <li><span class="areas__chip" data-x="41" data-y="57">Καισαριανή</span></li>
-        <li><span class="areas__chip" data-x="57" data-y="62">Βύρωνας</span></li>
-        <li><span class="areas__chip" data-x="19" data-y="55">Παγκράτι</span></li>
-        <li><span class="areas__chip" data-x="26" data-y="12">Αμπελόκηποι</span></li>
-        <li><span class="areas__chip" data-x="71" data-y="17">Χολαργός</span></li>
-        <li><span class="areas__chip" data-x="81" data-y="30">Παπάγου</span></li>
-        <li><span class="areas__chip" data-x="13" data-y="29">Κέντρο Αθήνας</span></li>
+        <li><span class="areas__chip areas__chip--primary" data-x="52" data-y="27" data-mx="50" data-my="50" data-hub>Ζωγράφου</span></li>
+        <li><span class="areas__chip" data-x="39" data-y="20" data-mx="36" data-my="32">Άνω Ιλίσια</span></li>
+        <li><span class="areas__chip" data-x="30" data-y="29" data-mx="27" data-my="44">Ιλίσια</span></li>
+        <li><span class="areas__chip" data-x="42" data-y="9"  data-mx="46" data-my="19">Γουδή</span></li>
+        <li><span class="areas__chip" data-x="42" data-y="42" data-mx="44" data-my="80">Καισαριανή</span></li>
+        <li><span class="areas__chip" data-x="58" data-y="45" data-mx="66" data-my="72">Βύρωνας</span></li>
+        <li><span class="areas__chip" data-x="22" data-y="40" data-mx="22" data-my="70">Παγκράτι</span></li>
+        <li><span class="areas__chip" data-x="27" data-y="11" data-mx="23" data-my="20">Αμπελόκηποι</span></li>
+        <li><span class="areas__chip" data-x="72" data-y="10" data-mx="72" data-my="16">Χολαργός</span></li>
+        <li><span class="areas__chip" data-x="84" data-y="21" data-mx="82" data-my="33">Παπάγου</span></li>
+        <li><span class="areas__chip" data-x="12" data-y="25" data-mx="16" data-my="56">Κέντρο Αθήνας</span></li>
       </ul>
-      <div class="areamap" id="areamap" data-reveal style="--d:80ms"></div>
     </div>
+  </div>
+
+  <!-- full-bleed: the routes want the whole width, not the text column -->
+  <div class="areamap" id="areamap" data-reveal></div>
+
+  <div class="wrap">
 
     <div class="section__head" style="margin-top:clamp(3rem,6vw,5rem);margin-bottom:1.5rem" data-reveal>
       <p class="eyebrow">Συχνές ερωτήσεις</p>
