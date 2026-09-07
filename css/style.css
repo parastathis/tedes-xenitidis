@@ -135,7 +135,7 @@ legend { padding: 0; display: block; }
 
 /* Skip link */
 .skip {
-  position: absolute; left: var(--gutter); top: -100px; z-index: 999;
+  position: absolute; left: var(--gutter); top: -100px; z-index: 1300;
   background: var(--ink); color: var(--bone); padding: .8rem 1.2rem;
   border-radius: 4px; font-weight: 600; transition: top .2s;
 }
@@ -200,9 +200,12 @@ legend { padding: 0; display: block; }
 .btn--lg { padding: 1.2rem 2.3rem; font-size: var(--step-1); }
 .btn[disabled] { opacity: .35; pointer-events: none; }
 
+/* The page's fixed furniture sits above 1000 deliberately: Leaflet numbers its
+   own controls up to 1000, and anything below that can end up underneath the
+   map. Order among themselves is unchanged — skip link, header, drawer, bar. */
 /* --------------------------------------------------------- header */
 .site-header {
-  position: fixed; inset: 0 0 auto 0; z-index: 100;
+  position: fixed; inset: 0 0 auto 0; z-index: 1200;
   padding-block: 1rem;
   transition: background .4s var(--ease), box-shadow .4s var(--ease), padding .4s var(--ease);
 }
@@ -334,7 +337,7 @@ legend { padding: 0; display: block; }
 
 /* mobile drawer */
 .mobile-nav {
-  position: fixed; inset: 0; z-index: 99;
+  position: fixed; inset: 0; z-index: 1150;
   background: var(--ink); color: var(--bone);
   display: grid; align-content: center; gap: .4rem;
   padding: 6rem var(--gutter) 3rem;
@@ -1197,6 +1200,12 @@ legend { padding: 0; display: block; }
 .contact__map {
   aspect-ratio: 4 / 3; border-radius: 3px; overflow: hidden;
   background: var(--ink-2); box-shadow: 0 30px 60px -35px rgba(22,21,26,.8);
+  /* Leaflet stacks its own panes at 400 and its controls at 1000. The map
+     element makes no stacking context of its own, so those numbers were
+     competing with the page directly and winning against the fixed header
+     (100), the drawer (99) and the action bar (90) — the map painted straight
+     over the menu. Opening a context here keeps all of that inside the map. */
+  position: relative; z-index: 0; isolation: isolate;
 }
 /* OSM ships one light basemap. Inverting the lightness (and spinning the hue
    back so nothing turns cyan) makes a dark map out of it — applied to the tile
@@ -1260,7 +1269,7 @@ legend { padding: 0; display: block; }
    STICKY MOBILE ACTION BAR
    ========================================================================== */
 .actionbar {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: 90;
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 1100;
   display: none; grid-template-columns: repeat(3, 1fr);
   background: var(--ink); border-top: 1px solid rgba(250,245,233,.14);
   transform: translateY(100%); transition: transform .5s var(--ease);
