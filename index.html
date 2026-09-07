@@ -24,7 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;600;700&family=Sofia+Sans+Extra+Condensed:wght@800;900&display=swap&subset=greek,latin">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<link rel="stylesheet" href="assets/vendor/leaflet.css">
 <link rel="stylesheet" href="css/style.css">
 <link rel="icon" href="assets/img/logo-kentauros-192.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/img/logo-kentauros-192.png">
@@ -617,19 +617,23 @@
         Το εργαστήριο είναι στη Μαικήνα 82. Όσο πιο κοντά είσαι, τόσο πιο γρήγορα ερχόμαστε
         για μέτρηση — και τόσο πιο εύκολα επιστρέφουμε αν χρειαστεί κάτι μετά.
       </p>
-      <ul class="areas__list">
-        <li><span class="areas__chip areas__chip--primary">Ζωγράφου</span></li>
-        <li><span class="areas__chip">Άνω Ιλίσια</span></li>
-        <li><span class="areas__chip">Ιλίσια</span></li>
-        <li><span class="areas__chip">Γουδή</span></li>
-        <li><span class="areas__chip">Καισαριανή</span></li>
-        <li><span class="areas__chip">Βύρωνας</span></li>
-        <li><span class="areas__chip">Παγκράτι</span></li>
-        <li><span class="areas__chip">Αμπελόκηποι</span></li>
-        <li><span class="areas__chip">Χολαργός</span></li>
-        <li><span class="areas__chip">Παπάγου</span></li>
-        <li><span class="areas__chip">Κέντρο Αθήνας</span></li>
+      <!-- The chips carry the coordinates; JS reads them and draws the map,
+           then hides this list to screen readers' benefit only. Without JS the
+           chips stay exactly as they were. -->
+      <ul class="areas__list" id="areasList">
+        <li><span class="areas__chip areas__chip--primary" data-x="53" data-y="41" data-hub>Ζωγράφου</span></li>
+        <li><span class="areas__chip" data-x="37" data-y="30">Άνω Ιλίσια</span></li>
+        <li><span class="areas__chip" data-x="25" data-y="42">Ιλίσια</span></li>
+        <li><span class="areas__chip" data-x="42" data-y="19">Γουδή</span></li>
+        <li><span class="areas__chip" data-x="41" data-y="57">Καισαριανή</span></li>
+        <li><span class="areas__chip" data-x="57" data-y="62">Βύρωνας</span></li>
+        <li><span class="areas__chip" data-x="19" data-y="55">Παγκράτι</span></li>
+        <li><span class="areas__chip" data-x="26" data-y="12">Αμπελόκηποι</span></li>
+        <li><span class="areas__chip" data-x="71" data-y="17">Χολαργός</span></li>
+        <li><span class="areas__chip" data-x="81" data-y="30">Παπάγου</span></li>
+        <li><span class="areas__chip" data-x="13" data-y="29">Κέντρο Αθήνας</span></li>
       </ul>
+      <div class="areamap" id="areamap" data-reveal style="--d:80ms"></div>
     </div>
 
     <div class="section__head" style="margin-top:clamp(3rem,6vw,5rem);margin-bottom:1.5rem" data-reveal>
@@ -693,7 +697,9 @@
   </a>
 </div>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
+<!-- Leaflet 1.9.4, vendored rather than pulled off a CDN: a blocked or slow
+     third-party host was leaving the map an empty box on mobile. -->
+<script src="assets/vendor/leaflet.js" defer></script>
 <script src="js/app.js" defer></script>
 </body>
 </html>

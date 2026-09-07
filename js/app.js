@@ -257,6 +257,47 @@ const heroFrameUrl = (dir, i) => `${dir}/f${String(i + 1).padStart(2, '0')}.webp
   }
 }
 
+/* ------------------------------------------------- hero headline, per letter
+   Split into word wrappers (so wrapping still works) and letter spans, each
+   carrying its own index for the stagger. «ΣΚΙΑ» gets a second index of its
+   own, so its letters drop into shade in step with the awning crossing them.
+   Skipped entirely for reduced motion — the CSS then keeps the line-at-a-time
+   rise it falls back to. */
+{
+  const title = $('#hero-title');
+  if (title && motionOK()) {
+    let i = 0;
+    const split = node => [...node.childNodes].forEach(child => {
+      if (child.nodeType === 1) { split(child); return; }
+      if (child.nodeType !== 3) return;
+      const frag = document.createDocumentFragment();
+      // keep the real whitespace between words, or the line can never wrap
+      child.textContent.split(/(\s+)/).forEach(part => {
+        if (!part) return;
+        if (!part.trim()) { frag.append(part); return; }
+        const word = document.createElement('span');
+        word.className = 'wd';
+        for (const ch of part) {
+          const letter = document.createElement('span');
+          letter.className = 'chr';
+          letter.style.setProperty('--i', i++);
+          letter.textContent = ch;
+          word.append(letter);
+        }
+        frag.append(word);
+      });
+      child.replaceWith(frag);
+    });
+
+    /* the split leaves ~30 one-character spans behind; name the heading so
+       assistive tech reads the sentence, not the alphabet */
+    title.setAttribute('aria-label', title.textContent.replace(/\s+/g, ' ').trim());
+    split(title);
+    $$('em .chr', title).forEach((el, j) => el.style.setProperty('--j', j));
+    title.classList.add('is-split');
+  }
+}
+
 /* ------------------------------------------------------------ reveals */
 {
   const io = new IntersectionObserver((entries, obs) => {
@@ -551,6 +592,136 @@ const GALLERY = [
 }
 
 /* ==========================================================================
+   ΠΕΡΙΟΧΕΣ — a sketched map instead of a row of chips
+   The chips in the HTML carry the coordinates and stay the source of truth:
+   they are what a screen reader and a JS-less browser get. Here they become a
+   hand-drawn map, with a trail of footprints walking out of the workshop to
+   every neighbourhood — which is the section's actual claim, that we come to
+   you, and the near ones fastest.
+   ========================================================================== */
+{
+  const host = $('#areamap');
+  const list = $('#areasList');
+  if (host && list) {
+    const pts = $$('.areas__chip', list).map(c => ({
+      name: c.textContent.trim(),
+      x: +c.dataset.x, y: +c.dataset.y,
+      hub: 'hub' in c.dataset
+    }));
+    const hub = pts.find(p => p.hub);
+
+    if (hub && pts.length > 1) {
+      const NS = 'http://www.w3.org/2000/svg';
+      const el = (tag, attrs = {}) => {
+        const n = document.createElementNS(NS, tag);
+        for (const k in attrs) n.setAttribute(k, attrs[k]);
+        return n;
+      };
+
+      const svg = el('svg', {
+        viewBox: '-5 -3 110 80', class: 'areamap__svg',
+        'aria-hidden': 'true', focusable: 'false', preserveAspectRatio: 'xMidYMid meet'
+      });
+
+      /* the ground: one wobbly blob, drawn by hand rather than traced */
+      svg.append(el('path', {
+        class: 'areamap__land',
+        d: 'M8 26 C10 12 26 2 44 5 C58 7 66 2 78 6 C92 11 98 24 94 38'
+         + ' C90 52 96 62 84 68 C70 75 52 70 38 72 C22 74 8 66 6 52 C4 42 6 34 8 26 Z'
+      }));
+
+      /* one shoe print — sole and heel — reused for every step on the map.
+         The toe points along local -y, so a step rotates by its heading + 90°. */
+      const defs = el('defs');
+      const foot = el('g', { id: 'kfoot' });
+      foot.append(el('ellipse', { cx: 0, cy: -.18, rx: .5, ry: .8 }));
+      foot.append(el('ellipse', { cx: 0, cy: 1.16, rx: .36, ry: .48 }));
+      defs.append(foot);
+      svg.append(defs);
+
+      const trails = el('g', { class: 'areamap__trails' });
+      const steps  = el('g', { class: 'areamap__steps' });
+      const pins   = el('g', { class: 'areamap__pins' });
+      svg.append(trails, steps, pins);
+      host.append(svg);                       // must be live to measure the paths
+
+      const addPin = (p, delay) => {
+        const g = el('g', { class: 'areamap__pin' + (p.hub ? ' is-hub' : '') });
+        g.style.setProperty('--d', delay + 'ms');
+        g.append(el('circle', { cx: p.x, cy: p.y, r: p.hub ? 2.5 : 1.5 }));
+        if (p.hub) g.append(el('circle', { class: 'areamap__halo', cx: p.x, cy: p.y, r: 4.4 }));
+        const label = el('text', { class: 'areamap__label', x: p.x, y: p.y + (p.hub ? 6.6 : 5.4), 'text-anchor': 'middle' });
+        label.textContent = p.name;
+        g.append(label);
+        if (p.hub) {
+          const sub = el('text', { class: 'areamap__sub', x: p.x, y: p.y + 10.2, 'text-anchor': 'middle' });
+          sub.textContent = 'το εργαστήριο';
+          g.append(sub);
+        }
+        pins.append(g);
+      };
+
+      let slowest = 0;
+      pts.filter(p => !p.hub).forEach((p, k) => {
+        /* a lazy curve, not a ruled line — alternate the bend so the trails fan
+           out of the workshop instead of stacking on top of each other */
+        const dx = p.x - hub.x, dy = p.y - hub.y;
+        const len = Math.hypot(dx, dy) || 1;
+        const bend = (k % 2 ? 1 : -1) * len * 0.16;
+        const cx = (hub.x + p.x) / 2 + (-dy / len) * bend;
+        const cy = (hub.y + p.y) / 2 + (dx / len) * bend;
+        const path = el('path', { d: `M${hub.x} ${hub.y} Q${cx.toFixed(2)} ${cy.toFixed(2)} ${p.x} ${p.y}` });
+        trails.append(path);
+
+        /* walk the curve, stamping alternating left/right prints along it */
+        const total = path.getTotalLength();
+        const GAP = 3.1;
+        let n = 0;
+        for (let d = GAP; d < total - 3.2; d += GAP, n++) {
+          const a = path.getPointAtLength(d);
+          const b = path.getPointAtLength(Math.min(d + 1, total));
+          const ang = Math.atan2(b.y - a.y, b.x - a.x);
+          const side = (n % 2 ? 1 : -1) * .92;      // left foot, right foot
+          const mark = el('use', {
+            class: 'areamap__step', href: '#kfoot',
+            transform: `translate(${(a.x + Math.cos(ang + Math.PI / 2) * side).toFixed(2)} `
+                     + `${(a.y + Math.sin(ang + Math.PI / 2) * side).toFixed(2)}) `
+                     + `rotate(${(ang * 180 / Math.PI + 90).toFixed(1)})`
+          });
+          // stagger by distance walked, so every trail leaves the shop at once
+          mark.style.setProperty('--d', (n * 52) + 'ms');
+          steps.append(mark);
+        }
+        const arrival = n * 52 + 140;
+        slowest = Math.max(slowest, arrival);
+        addPin(p, arrival);                    // the pin lands as the walk reaches it
+      });
+
+      addPin(hub, 0);
+
+      /* the compass, because every drawn map has one */
+      const rose = el('g', { class: 'areamap__rose' });
+      rose.style.setProperty('--d', (slowest + 120) + 'ms');
+      rose.append(el('circle', { cx: 93, cy: 63, r: 5.4 }));
+      rose.append(el('path', { class: 'areamap__needle', d: 'M93 58.4 L95 63.6 L93 62.4 L91 63.6 Z' }));
+      const n = el('text', { class: 'areamap__north', x: 93, y: 70.4, 'text-anchor': 'middle' });
+      n.textContent = 'Β';
+      rose.append(n);
+      svg.append(rose);
+
+      list.classList.add('is-mapped');          // stays for AT, leaves the layout
+
+      /* The walk runs on a loop — someone is always on their way out to a job.
+         It only ticks while the map is actually on screen, same as the video
+         loops: an animation nobody is looking at is just spent battery. */
+      new IntersectionObserver(([en]) => {
+        host.classList.toggle('is-walking', en.isIntersecting && motionOK());
+      }, { threshold: .12 }).observe(host);
+    }
+  }
+}
+
+/* ==========================================================================
    FAQ — mirrors the FAQPage JSON-LD exactly
    ========================================================================== */
 const FAQ = [
@@ -720,8 +891,21 @@ const FAQ = [
    ========================================================================== */
 {
   const el = $('#map');
+  const LAT = 37.9756093, LNG = 23.7676785; // Μαικήνα 82, Ζωγράφου — geocoded off Google's own place resolution
+
+  /* If Leaflet is missing or the map throws, never leave a dead grey box —
+     an empty panel reads as a broken map (or a missing API key). Fall back to
+     the address itself, which is what the map was there to tell you. */
+  const fallback = () => {
+    if (!el || el.dataset.fallback) return;
+    el.dataset.fallback = '1';
+    el.classList.add('contact__map--flat');
+    el.innerHTML = '<a class="contact__mapfall" target="_blank" rel="noopener"'
+      + ' href="https://www.google.com/maps/search/?api=1&query=%CE%9C%CE%B1%CE%B9%CE%BA%CE%AE%CE%BD%CE%B1+82+%CE%96%CF%89%CE%B3%CF%81%CE%AC%CF%86%CE%BF%CF%85">'
+      + '<strong>Μαικήνα 82</strong><span>Ζωγράφου 15771</span><span>Άνοιξε στους χάρτες →</span></a>';
+  };
+
   if (el && window.L) {
-    const LAT = 37.9756093, LNG = 23.7676785; // Μαικήνα 82, Ζωγράφου — geocoded off Google's own place resolution
     const boot = () => {
       const map = L.map(el, {
         center: [LAT, LNG], zoom: 16, scrollWheelZoom: false,
@@ -754,8 +938,12 @@ const FAQ = [
     // Leaflet needs the container laid out before it measures tiles — wait
     // until the map is actually on screen, same gate as the ambient loops.
     new IntersectionObserver(([en], obs) => {
-      if (en.isIntersecting) { boot(); obs.disconnect(); }
+      if (!en.isIntersecting) return;
+      obs.disconnect();
+      try { boot(); } catch { fallback(); }
     }).observe(el);
+  } else {
+    fallback();                                // Leaflet blocked or never arrived
   }
 }
 

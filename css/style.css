@@ -370,7 +370,9 @@ legend { padding: 0; display: block; }
 /* The stock frames run amber. A small hue rotation and a desaturation pull
    them off yellow and onto the leaflet's warm-neutral, without touching the
    real job photography elsewhere on the page. */
-.hero__media { filter: saturate(calc(.80 + .10 * var(--shade, 0))) hue-rotate(-8deg); }
+/* and the scene desaturates going into shade, rather than saturating up —
+   colour drains out of a shaded balcony, it doesn't intensify */
+.hero__media { filter: saturate(calc(.86 - .08 * var(--shade, 0))) hue-rotate(-8deg); }
 .sun__layer img { filter: saturate(.84) hue-rotate(-7deg); }
 /* Glare overlay driven by --shade (0 = blinding noon, 1 = full shade).
    Hotspot lives top-RIGHT, deliberately clear of the copy block (which sits
@@ -382,17 +384,21 @@ legend { padding: 0; display: block; }
   opacity: calc(1 - var(--shade, 0));
   mix-blend-mode: screen;
 }
+/* Shade is lit by open sky, so it falls COOL. This layer used to fade in
+   burgundy (--wine-deep), which tinted the whole balcony red the moment the
+   awning came down — the one place on the page where the brand colour was
+   lying about the light. Slate blue reads as actual shade. */
 .hero__cool {
   position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(200deg, rgba(71,18,22,.20), rgba(22,21,26,.42));
+  background: linear-gradient(200deg, rgba(44,56,78,.24), rgba(20,21,28,.44));
   opacity: var(--shade, 0);
 }
 /* the hard shadow edge that sweeps across as the awning opens */
 .hero__shadowline {
   position: absolute; inset: 0; pointer-events: none;
   background: linear-gradient(101deg,
-      rgba(42,17,23,.64) 0%,
-      rgba(34,19,24,.52) calc(var(--sweep, 0%) - 6%),
+      rgba(24,29,40,.62) 0%,
+      rgba(22,26,35,.5) calc(var(--sweep, 0%) - 6%),
       rgba(22,21,26,.06) var(--sweep, 0%),
       transparent calc(var(--sweep, 0%) + 3%));
 }
@@ -406,7 +412,7 @@ legend { padding: 0; display: block; }
       rgba(18,15,21,.94) 0%, rgba(18,15,21,.72) 24%,
       rgba(18,15,21,.34) 50%, rgba(18,15,21,.06) 72%, transparent 86%),
     linear-gradient(to right,
-      rgba(26,15,21,.68) 0%, rgba(22,15,21,.30) 32%, transparent 64%);
+      rgba(18,18,25,.68) 0%, rgba(17,17,23,.30) 32%, transparent 64%);
 }
 .hero__grain {
   position: absolute; inset: 0; pointer-events: none; opacity: .32;
@@ -441,27 +447,57 @@ legend { padding: 0; display: block; }
 .hero__title .ln:nth-child(2) > span { animation-delay: .37s; }
 .hero__title .ln:nth-child(3) > span { animation-delay: .49s; }
 @keyframes lineUp { to { transform: none; } }
-/* «ΣΚΙΑ» is the whole pitch — give it its own light and a hand-drawn underline.
-   The underline doesn't just draw in as a bar: it drops a small scalloped
-   fringe under itself on the way, the same trim you'd find on the workshop's
-   own awnings. */
+
+/* JS splits the headline into words and letters, so they rise out of the line
+   mask one after another instead of a line at a time. The whole-line rise
+   above stays as the fallback for no-JS and for reduced motion, where the
+   split never happens. */
+.hero__title.is-split .ln > span { transform: none; animation: none; }
+.hero__title .wd { display: inline-block; white-space: nowrap; }
+.hero__title .chr {
+  display: inline-block; transform: translateY(110%);
+  animation: letterUp .75s var(--ease) calc(var(--i) * 16ms + .22s) forwards;
+}
+@keyframes letterUp { to { transform: none; } }
+/* «ΣΚΙΑ» is the whole pitch, so the word gets the demo: once the letters land,
+   an awning unrolls under it — canopy first, then the scalloped valance
+   dropping and settling like real fabric — and the letters fall into shade one
+   after another as it crosses them. Sunlit bone → shaded brass. */
 .hero__title em {
   font-style: normal; color: var(--brass-lite);
   position: relative; display: inline-block;
 }
-.hero__title em::before {
-  content: ""; position: absolute; left: 0; right: 0; bottom: .08em; height: .07em;
-  background: var(--brass); transform-origin: left; transform: scaleX(0);
-  animation: underlineIn .85s var(--ease) 1.05s forwards;
+.hero__title.is-split em .chr {
+  color: var(--bone);
+  animation: letterUp .75s var(--ease) calc(var(--i) * 16ms + .22s) forwards,
+             intoShade .55s var(--ease) calc(var(--j) * 90ms + 1.5s) forwards;
 }
-.hero__title em::after {
-  content: ""; position: absolute; left: 0; right: 0; bottom: -.01em; height: .09em;
-  background-image: radial-gradient(circle 0.05em at 50% 0, var(--brass) 99%, transparent 100%);
-  background-size: .17em 100%; background-repeat: repeat-x;
+@keyframes intoShade {
+  to { color: var(--brass-lite); text-shadow: 0 .04em .07em rgba(22,21,26,.55); }
+}
+/* the canopy, unrolling left to right off its arm */
+.hero__title em::before {
+  content: ""; position: absolute; left: 0; right: 0; bottom: .07em; height: .085em;
+  background: linear-gradient(180deg, var(--brass-lite), var(--brass) 58%, var(--brass-deep));
   transform-origin: left; transform: scaleX(0);
-  animation: underlineIn .85s var(--ease) 1.05s forwards;
+  animation: underlineIn .85s var(--ease) 1.4s forwards;
+}
+/* the valance: wipes across with the canopy, then drops off it and settles */
+.hero__title em::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: -.01em; height: .08em;
+  background-image: radial-gradient(circle 0.045em at 50% 0, var(--brass) 99%, transparent 100%);
+  background-size: .16em 100%; background-repeat: repeat-x;
+  transform-origin: left top; transform: scaleX(0); scale: 1 .1;
+  animation: underlineIn .85s var(--ease) 1.4s forwards,
+             valanceDrop 1.1s var(--ease-io) 1.62s forwards;
 }
 @keyframes underlineIn { to { transform: scaleX(1); } }
+@keyframes valanceDrop {
+  0%   { scale: 1 .1;   rotate: 0deg; }
+  52%  { scale: 1 1.16; rotate: .45deg; }
+  76%  { scale: 1 .95;  rotate: -.22deg; }
+  100% { scale: 1 1;    rotate: 0deg; }
+}
 
 .hero__lede {
   max-width: 46ch; font-size: var(--step-1); color: var(--bone-2);
@@ -960,6 +996,80 @@ legend { padding: 0; display: block; }
 }
 .areas__chip:hover { background: var(--ink); color: var(--bone); transform: translateY(-2px); box-shadow: inset 0 0 0 1px var(--ink); }
 .areas__chip--primary { background: var(--ink); color: var(--bone); box-shadow: inset 0 0 0 1px var(--ink); }
+/* once the map is drawn the chips have done their job on screen — but they
+   stay in the DOM, because they are what a screen reader reads */
+.areas__list.is-mapped {
+  position: absolute; width: 1px; height: 1px; margin: -1px;
+  padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+}
+
+/* the drawn map ------------------------------------------------------------ */
+.areamap {
+  margin-top: 1.75rem; border-radius: 4px;
+  background: var(--bone); box-shadow: inset 0 0 0 1px var(--line);
+  padding: clamp(.6rem, 2vw, 1.4rem);
+}
+.areamap__svg { display: block; width: 100%; height: auto; }
+.areamap__land {
+  fill: var(--bone-2); stroke: var(--line-brass); stroke-width: .35;
+  stroke-dasharray: 2.2 1.6; stroke-linecap: round;
+}
+.areamap__trails path { fill: none; stroke: none; }
+
+.areamap__step { fill: var(--brass-deep); opacity: 0; }
+/* the prints land one after another, hold, then lift — and the wave repeats,
+   so there is always someone walking out to a job */
+.areamap.is-walking .areamap__step {
+  animation: footWalk 3.6s linear var(--d, 0ms) infinite;
+}
+@keyframes footWalk {
+  0%   { opacity: 0; }
+  6%   { opacity: .72; }
+  46%  { opacity: .72; }
+  70%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+.areamap__pin { opacity: 0; }
+.areamap.is-in .areamap__pin { animation: pinIn .45s var(--ease) var(--d, 0ms) forwards; }
+@keyframes pinIn { from { opacity: 0; } to { opacity: 1; } }
+.areamap__pin circle { fill: var(--brass-deep); }
+.areamap__pin.is-hub circle { fill: var(--wine); }
+.areamap__halo {
+  fill: none !important; stroke: var(--wine); stroke-width: .4; opacity: .45;
+  transform-box: fill-box; transform-origin: 50% 50%;
+  animation: haloOut 2.6s var(--ease-io) infinite;
+}
+@keyframes haloOut { 0% { opacity: .5; scale: .55; } 100% { opacity: 0; scale: 1.15; } }
+.areamap__label {
+  fill: var(--ink); font-family: var(--display); font-weight: 800;
+  font-size: 3.1px; letter-spacing: .02em;
+}
+.areamap__pin.is-hub .areamap__label { font-size: 3.9px; fill: var(--wine); }
+.areamap__sub {
+  fill: var(--ink-3); font-family: var(--body); font-size: 2.2px;
+  letter-spacing: .06em; text-transform: uppercase;
+}
+.areamap__rose { opacity: 0; }
+.areamap.is-in .areamap__rose { animation: pinIn .5s var(--ease) var(--d, 0ms) forwards; }
+.areamap__rose circle { fill: none; stroke: var(--line-brass); stroke-width: .35; }
+.areamap__needle { fill: var(--brass); }
+.areamap__north {
+  fill: var(--ink-3); font-family: var(--display); font-weight: 800; font-size: 2.8px;
+}
+/* on a phone the map is half the width, so the type has to grow against it */
+@media (max-width: 620px) {
+  .areamap__label { font-size: 4.2px; }
+  .areamap__pin.is-hub .areamap__label { font-size: 5px; }
+  .areamap__sub { font-size: 2.9px; }
+  .areamap__north { font-size: 3.6px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* no walking loop — the trails simply sit there, fully drawn */
+  .areamap__pin, .areamap__rose { opacity: 1; }
+  .areamap__step { opacity: .72; animation: none; }
+  .areamap__halo { animation: none; opacity: .35; }
+}
 
 /* ==========================================================================
    FAQ
@@ -1052,6 +1162,17 @@ legend { padding: 0; display: block; }
 }
 .contact__map:hover { filter: none; }
 .contact__map .leaflet-container { background: var(--ink-2); font-family: var(--body); }
+/* the no-map fallback: the address, still useful, still clickable */
+.contact__map--flat { filter: none; display: grid; }
+.contact__mapfall {
+  display: grid; align-content: center; justify-items: center; gap: .35rem;
+  text-align: center; text-decoration: none; color: var(--bone);
+  background: var(--ink-2); box-shadow: inset 0 0 0 1px var(--line-brass);
+  transition: background .35s var(--ease);
+}
+.contact__mapfall:hover { background: var(--wine-deep); }
+.contact__mapfall strong { font-family: var(--display); font-size: var(--step-2); letter-spacing: .01em; }
+.contact__mapfall span { font-size: var(--step--1); color: var(--bone-3); letter-spacing: .06em; }
 
 /* our own pin, in the wine/brass palette instead of Leaflet's blue teardrop */
 .map-pin { position: relative; }
@@ -1143,5 +1264,9 @@ legend { padding: 0; display: block; }
   .hero { height: auto; }
   .hero__sticky { position: relative; height: auto; min-height: 88svh; }
   .hero__title .ln > span { transform: none; }
+  /* the split only runs for motion-safe visitors, but the setting can flip
+     mid-session — leave the letters and the valance where they belong */
+  .hero__title .chr { transform: none; }
+  .hero__title em::after { scale: 1 1; }
   .hero__lede, .hero__actions, .hero__meta { opacity: 1; }
 }
