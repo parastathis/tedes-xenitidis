@@ -1038,30 +1038,34 @@ legend { padding: 0; display: block; }
 /* Not a map: no land, no border, no compass. Just the dots and the walk
    between them, running the full width of the screen. */
 .areamap {
-  margin-top: clamp(2rem, 5vw, 3.5rem);
+  margin-top: clamp(1.25rem, 3vw, 2.25rem);
   padding-inline: clamp(1rem, 4vw, 3rem);
 }
 .areamap__svg { display: block; width: 100%; height: auto; }
 .areamap__trails path { fill: none; stroke: none; }
 
 .areamap__step { fill: var(--ink); opacity: 0; }
-/* Each route draws itself print by print, holds while the rest catch up, then
-   clears and goes again — the way a flight map redraws its paths. */
+/* The walk lays itself down print by print from the workshop onward, holds the
+   finished route, then clears and sets off again. The cycle length is set in
+   JS from the number of prints, so the front of the walk never laps its tail. */
 .areamap.is-walking .areamap__step {
-  animation: footWalk 5s linear var(--d, 0ms) infinite;
+  animation: footWalk var(--walk, 6s) linear var(--d, 0ms) infinite;
 }
 @keyframes footWalk {
   0%   { opacity: 0; }
-  4%   { opacity: .88; }
-  62%  { opacity: .88; }
-  76%  { opacity: 0; }
+  3%   { opacity: .88; }
+  68%  { opacity: .88; }
+  80%  { opacity: 0; }
   100% { opacity: 0; }
 }
 
-/* every dot black — the workshop is simply the bigger one, with a pulse */
+/* every stop black — the workshop is the one red mark, because it is where
+   every one of these trips starts */
 .areamap__pin circle { fill: var(--ink); }
+.areamap__pin.is-hub circle { fill: var(--red); }
+.areamap__pin.is-hub .areamap__label { fill: var(--red); }
 .areamap__halo {
-  fill: none !important; stroke: var(--ink); stroke-width: .35; opacity: .4;
+  fill: none !important; stroke: var(--red); stroke-width: .35; opacity: .4;
   transform-box: fill-box; transform-origin: 50% 50%;
   animation: haloOut 2.6s var(--ease-io) infinite;
 }

@@ -592,12 +592,15 @@ const GALLERY = [
 }
 
 /* ==========================================================================
-   ΠΕΡΙΟΧΕΣ — a sketched map instead of a row of chips
-   The chips in the HTML carry the coordinates and stay the source of truth:
-   they are what a screen reader and a JS-less browser get. Here they become a
-   hand-drawn map, with a trail of footprints walking out of the workshop to
-   every neighbourhood — which is the section's actual claim, that we come to
-   you, and the near ones fastest.
+   ΠΕΡΙΟΧΕΣ — the route, walked in order
+   Not a map and not a graph: a single trip. It starts at the workshop and
+   goes to the next neighbourhood, and the next, in order of how far the van
+   has to travel — so the diagram says the same thing the copy does, that the
+   near ones get seen fastest. The line runs to the edge of the screen, drops
+   a row, and comes back the other way.
+
+   The chips in the HTML are the source of truth: their ORDER is the route,
+   and they are what a screen reader and a JS-less browser get.
    ========================================================================== */
 {
   const host = $('#areamap');
@@ -610,24 +613,40 @@ const GALLERY = [
       for (const k in attrs) n.setAttribute(k, attrs[k]);
       return n;
     };
-    const narrow = () => matchMedia('(max-width: 720px)').matches;
+    // how many stops fit across before the walk has to drop a row
+    const columns = () => matchMedia('(max-width: 560px)').matches ? 2
+                        : matchMedia('(max-width: 900px)').matches ? 3 : 4;
 
+    let cols = 0;
     const draw = () => {
-      const tall = narrow();
-      const pts = chips.map(c => ({
-        name: c.textContent.trim(),
-        x: +(tall ? c.dataset.mx : c.dataset.x),
-        y: +(tall ? c.dataset.my : c.dataset.y),
-        hub: 'hub' in c.dataset
-      }));
-      const hub = pts.find(p => p.hub);
-      if (!hub || pts.length < 2) return;
+      cols = columns();
+      const rows = Math.ceil(chips.length / cols);
+      const padX = cols === 2 ? 20 : 10;
+      /* Fewer columns means more rows AND bigger type, so the rows have to open
+         up or the names collide with the row beneath. Vertical space is the one
+         thing a phone has plenty of. */
+      const rowGap = cols === 2 ? 19 : cols === 3 ? 16 : 13;
+      const top = 7;
+      const colX = c => cols === 1 ? 50 : padX + ((100 - padX * 2) / (cols - 1)) * c;
+
+      /* Boustrophedon: row 0 runs left to right, row 1 comes back right to
+         left, so consecutive stops are always neighbours and the turn at the
+         end of a row is a straight drop. */
+      const stops = chips.map((c, i) => {
+        const row = Math.floor(i / cols);
+        const inRow = i % cols;
+        const col = row % 2 ? cols - 1 - inRow : inRow;
+        return {
+          name: c.dataset.label || c.textContent.trim(), hub: 'hub' in c.dataset,
+          x: colX(col), y: top + row * rowGap, row
+        };
+      });
 
       host.textContent = '';
+      const height = top + (rows - 1) * rowGap + 11;
       const svg = el('svg', {
-        viewBox: tall ? '-8 -8 116 116' : '-6 -8 112 68',
-        class: 'areamap__svg', 'aria-hidden': 'true', focusable: 'false',
-        preserveAspectRatio: 'xMidYMid meet'
+        viewBox: `-4 0 108 ${height}`, class: 'areamap__svg',
+        'aria-hidden': 'true', focusable: 'false', preserveAspectRatio: 'xMidYMid meet'
       });
 
       /* one shoe print — sole and heel — reused for every step.
@@ -645,94 +664,58 @@ const GALLERY = [
       svg.append(guides, steps, pins);
       host.append(svg);                        // must be live to measure the paths
 
-      /* Labels sit on the far side of their dot, pointing away from the
-         workshop. Every route arrives from the hub side, so the name is never
-         in the way of its own trail. */
-      const addPin = p => {
-        const g = el('g', { class: 'areamap__pin' + (p.hub ? ' is-hub' : '') });
-        g.append(el('circle', { cx: p.x, cy: p.y, r: p.hub ? 2.2 : 1.35 }));
-        if (p.hub) g.append(el('circle', { class: 'areamap__halo', cx: p.x, cy: p.y, r: 4.2 }));
-
-        let ux = 0, uy = 1;                       // the hub's own name goes below
-        if (!p.hub) {
-          const dx = p.x - hub.x, dy = p.y - hub.y;
-          const m = Math.hypot(dx, dy) || 1;
-          ux = dx / m; uy = dy / m;
-        }
-        /* Side-set labels need horizontal room, which a phone hasn't got — the
-           westmost name ran off the edge. In the portrait layout every name
-           goes above or below its dot instead, where the space actually is. */
-        const sideways = !tall && Math.abs(ux) > .55;
+      /* A stop that hands the walk down to the next row wears its name above,
+         and the one that receives it wears its name below — either way the
+         drop never runs through the lettering. */
+      stops.forEach((s, i) => {
+        const next = stops[i + 1], prev = stops[i - 1];
+        const dropsDown = next && next.row !== s.row;
+        const cameDown  = prev && prev.row !== s.row;
+        const above = dropsDown && !cameDown;
+        const g = el('g', { class: 'areamap__pin' + (s.hub ? ' is-hub' : '') });
+        g.append(el('circle', { cx: s.x, cy: s.y, r: s.hub ? 2.2 : 1.35 }));
+        if (s.hub) g.append(el('circle', { class: 'areamap__halo', cx: s.x, cy: s.y, r: 4.2 }));
         const label = el('text', {
-          class: 'areamap__label',
-          x: (p.x + ux * (sideways ? 2.8 : 1.4)).toFixed(2),
-          y: (p.y + uy * 3.4 + (sideways ? 1.1 : uy > 0 ? 3.4 : -2.2)).toFixed(2),
-          'text-anchor': sideways ? (ux > 0 ? 'start' : 'end') : 'middle'
+          class: 'areamap__label', x: s.x, y: s.y + (above ? -3.6 : 5.4), 'text-anchor': 'middle'
         });
-        label.textContent = p.name;
+        label.textContent = s.name;
         g.append(label);
-        if (p.hub) {
-          const sub = el('text', { class: 'areamap__sub', x: p.x, y: p.y + 10.4, 'text-anchor': 'middle' });
-          sub.textContent = 'το εργαστήριο';
-          g.append(sub);
-        }
         pins.append(g);
-      };
+      });
 
-      /* Pins go down first, so their labels can be measured — the prints have
-         to route around real text boxes, not guesses at where the text is. */
-      pts.forEach(addPin);
-
-      /* Only the dots are hard obstacles. Names no longer need cutting a route
-         in half: they sit on the far side of their own dot, and they carry a
-         knock-out halo, so a trail that does pass one reads as going behind it. */
-      const dots = pts.map(p => ({ x: p.x, y: p.y, r: (p.hub ? 2.8 : 1.9) }));
-      const blocked = (x, y) => dots.some(d => Math.hypot(x - d.x, y - d.y) < d.r);
-
-      /* Routes, drawn the way a flight map draws them: a curve out of the hub
-         to each destination, walked print by print. */
-      const CLEAR_HUB = 5.2, CLEAR_END = 5.6, GAP = 3.1;
-      pts.filter(p => !p.hub).forEach((p, k) => {
-        const dx = p.x - hub.x, dy = p.y - hub.y;
-        const len = Math.hypot(dx, dy) || 1;
-        const bend = (k % 2 ? 1 : -1) * len * 0.15;
-        const cx = (hub.x + p.x) / 2 + (-dy / len) * bend;
-        const cy = (hub.y + p.y) / 2 + (dx / len) * bend;
-        const path = el('path', { d: `M${hub.x} ${hub.y} Q${cx.toFixed(2)} ${cy.toFixed(2)} ${p.x} ${p.y}` });
+      /* One continuous walk, numbered straight through: the prints land in
+         the order they are taken, from the workshop to the last stop. */
+      const CLEAR = 4.6, GAP = 3.1;
+      let step = 0;
+      for (let i = 0; i < stops.length - 1; i++) {
+        const a = stops[i], b = stops[i + 1];
+        const path = el('path', { d: `M${a.x} ${a.y} L${b.x} ${b.y}` });
         guides.append(path);
-
         const total = path.getTotalLength();
-        let n = 0;
-        for (let d = CLEAR_HUB; d < total - CLEAR_END; d += GAP, n++) {
-          const a = path.getPointAtLength(d);
-          const b = path.getPointAtLength(Math.min(d + 1, total));
-          const ang = Math.atan2(b.y - a.y, b.x - a.x);
-          const side = (n % 2 ? 1 : -1) * .9;    // left foot, right foot
-          const fx = a.x + Math.cos(ang + Math.PI / 2) * side;
-          const fy = a.y + Math.sin(ang + Math.PI / 2) * side;
-          if (blocked(fx, fy)) continue;         // step over a name, not on it
+        for (let d = CLEAR; d < total - CLEAR; d += GAP, step++) {
+          const p = path.getPointAtLength(d);
+          const q = path.getPointAtLength(Math.min(d + 1, total));
+          const ang = Math.atan2(q.y - p.y, q.x - p.x);
+          const side = (step % 2 ? 1 : -1) * .9;      // left foot, right foot
           const mark = el('use', {
             class: 'areamap__step', href: '#kfoot',
-            transform: `translate(${fx.toFixed(2)} ${fy.toFixed(2)}) `
+            transform: `translate(${(p.x + Math.cos(ang + Math.PI / 2) * side).toFixed(2)} `
+                     + `${(p.y + Math.sin(ang + Math.PI / 2) * side).toFixed(2)}) `
                      + `rotate(${(ang * 180 / Math.PI + 90).toFixed(1)})`
           });
-          // stagger by distance walked, so every route leaves the shop at once
-          mark.style.setProperty('--d', (n * 60) + 'ms');
+          mark.style.setProperty('--d', (step * 42) + 'ms');
           steps.append(mark);
         }
-      });
+      }
+      // the loop has to outlast the whole walk, or the front of it laps the tail
+      host.style.setProperty('--walk', (step * 42 + 2600) + 'ms');
     };
 
     draw();
     list.classList.add('is-mapped');            // stays for AT, leaves the layout
 
-    /* redraw only when we actually cross the layout breakpoint */
-    let wasNarrow = narrow();
-    addEventListener('resize', () => {
-      if (narrow() === wasNarrow) return;
-      wasNarrow = narrow();
-      draw();
-    });
+    /* redraw only when the number of stops per row actually changes */
+    addEventListener('resize', () => { if (columns() !== cols) draw(); });
 
     /* The walk runs on a loop — someone is always on their way out to a job.
        It only ticks while the diagram is on screen, same as the video loops:

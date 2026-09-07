@@ -617,22 +617,23 @@
         Το εργαστήριο είναι στη Μαικήνα 82. Όσο πιο κοντά είσαι, τόσο πιο γρήγορα ερχόμαστε
         για μέτρηση — και τόσο πιο εύκολα επιστρέφουμε αν χρειαστεί κάτι μετά.
       </p>
-      <!-- The chips carry the coordinates — data-x/y for the wide layout,
-           data-mx/my for the portrait one on phones. JS reads them, draws the
-           route diagram and hides this list from view only. Without JS the
-           chips stay exactly as they were. -->
+      <!-- Order is the route itself: the workshop first, then outward by how
+           far the van has to go. JS walks this list in order and lays it out.
+           Without JS the chips stay exactly as they were. -->
       <ul class="areas__list" id="areasList">
-        <li><span class="areas__chip areas__chip--primary" data-x="52" data-y="27" data-mx="50" data-my="50" data-hub>Ζωγράφου</span></li>
-        <li><span class="areas__chip" data-x="39" data-y="20" data-mx="36" data-my="32">Άνω Ιλίσια</span></li>
-        <li><span class="areas__chip" data-x="30" data-y="29" data-mx="27" data-my="44">Ιλίσια</span></li>
-        <li><span class="areas__chip" data-x="42" data-y="9"  data-mx="46" data-my="19">Γουδή</span></li>
-        <li><span class="areas__chip" data-x="42" data-y="42" data-mx="44" data-my="80">Καισαριανή</span></li>
-        <li><span class="areas__chip" data-x="58" data-y="45" data-mx="66" data-my="72">Βύρωνας</span></li>
-        <li><span class="areas__chip" data-x="22" data-y="40" data-mx="22" data-my="70">Παγκράτι</span></li>
-        <li><span class="areas__chip" data-x="27" data-y="11" data-mx="23" data-my="20">Αμπελόκηποι</span></li>
-        <li><span class="areas__chip" data-x="72" data-y="10" data-mx="72" data-my="16">Χολαργός</span></li>
-        <li><span class="areas__chip" data-x="84" data-y="21" data-mx="82" data-my="33">Παπάγου</span></li>
-        <li><span class="areas__chip" data-x="12" data-y="25" data-mx="16" data-my="56">Κέντρο Αθήνας</span></li>
+        <!-- the list still says Ζωγράφου (that is the service area); the
+             diagram shows it as what it is on the route — the workshop -->
+        <li><span class="areas__chip areas__chip--primary" data-hub data-label="Εργαστήριο">Ζωγράφου</span></li>
+        <li><span class="areas__chip">Άνω Ιλίσια</span></li>
+        <li><span class="areas__chip">Ιλίσια</span></li>
+        <li><span class="areas__chip">Γουδή</span></li>
+        <li><span class="areas__chip">Καισαριανή</span></li>
+        <li><span class="areas__chip">Βύρωνας</span></li>
+        <li><span class="areas__chip">Παγκράτι</span></li>
+        <li><span class="areas__chip">Αμπελόκηποι</span></li>
+        <li><span class="areas__chip">Χολαργός</span></li>
+        <li><span class="areas__chip">Παπάγου</span></li>
+        <li><span class="areas__chip">Κέντρο Αθήνας</span></li>
       </ul>
     </div>
   </div>
