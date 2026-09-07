@@ -33,11 +33,11 @@ Business Profile suspended. None of the Kilkis page's 10 photos are used here.
 |---|---|---|
 | Brand | ΚΕΝΤΑΥΡΟΣ / Τέντες Ξενιτίδης | vrisko, xo.gr, e-attica |
 | Owner | Στυλιανός Π. Ξενιτίδης | vrisko |
-| Address | Γαλήνης 45, Ζωγράφου | all sources agree |
-| Landline | 210 7751368 | all sources agree |
+| Address | **Μαικήνα 82, Ζωγράφου 15771** | owner, Sep 2026 — the online directories still list the old Γαλήνης 45 |
+| Landline | 210 7751368 | ⚠️ owner reports this number is **no longer in service** — needs replacing or removing |
 | Mobiles | 6970 417549 · 6936 743560 | i-need.gr, epagelmatias |
 | Email | tenteskentayros@hotmail.gr | i-need.gr |
-| Services | τέντες με βραχίονες, πέργκολες, κασετίνες, ρολοκουρτίνες, επισκευές, αλλαγή πανιών, ειδικές κατασκευές | i-need.gr (verbatim) |
+| Services | τέντες με βραχίονες, **τέντες με αντηρίδες**, κασετίνες, πέργκολες, ρολοκουρτίνες, επισκευές, αλλαγή πανιών, ειδικές κατασκευές | i-need.gr + owner |
 | Google reviews | ~15 | search result |
 | Descriptor | «βιοτεχνία τεντών» (own workshop, not a reseller) | search result |
 

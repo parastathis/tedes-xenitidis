@@ -4,12 +4,11 @@
 
    Hue-locked to the emblem. The ΚΕΝΤΑΥΡΟΣ mark was sampled straight off the
    workshop's own reel: red H1° S74% L49%, ink #242122. Every red on this page
-   is that same hue taken down in lightness (burgundy for anything that has to
-   carry area); every brass sits at a fixed H42°; and the neutrals are tinted
-   onto the brass hue so no grey ever fights the palette. Ratio follows the A3
-   leaflet — charcoal and linen do the work, burgundy carries every action,
-   brass appears only as rules, badges and numerals, never as a large fill.
-   Every foreground/background pair in use clears WCAG AAA.
+   is that same hue — burgundy for anything that has to carry area, the
+   brighter emblem red (kept under the --brass variable name for a minimal
+   diff) for rules, badges and numerals, never as a large fill. Ratio follows
+   the A3 leaflet — charcoal and linen do the work, burgundy carries every
+   primary action. Every foreground/background pair in use clears WCAG AAA.
 
    Display: Sofia Sans Extra Condensed · Body: Commissioner
    ========================================================================== */
@@ -26,10 +25,11 @@
   --bone-3:     #B7A88F;
   --marble:     #FFFFFF;
 
-  /* --- Brass: the badges, the hairlines, the "59+" ring --- */
-  --brass:      #A87C2E;
-  --brass-deep: #8C6423;
-  --brass-lite: #D8B876;
+  /* --- Red: the badges, the hairlines, the "59+" ring — the emblem's own
+     red, sampled off the logo, taken up/down in lightness for each role --- */
+  --brass:      #D91F26;
+  --brass-deep: #A81017;
+  --brass-lite: #ED6D6F;
 
   /* --- Burgundy: the leaflet's band, and every primary action --- */
   --wine:       #5C171B;
@@ -212,11 +212,17 @@ legend { padding: 0; display: block; }
 }
 .site-header.is-stuck {
   padding-block: .55rem;
-  background: color-mix(in srgb, var(--bone) 88%, transparent);
-  backdrop-filter: blur(14px) saturate(1.2);
   box-shadow: 0 1px 0 var(--line-soft), 0 12px 30px -24px rgba(22,21,26,.5);
 }
-.site-header.is-stuck::before { opacity: 0; }
+/* backdrop-filter lives on the pseudo-element, never on .site-header itself —
+   putting it on the element that also holds the <img> logo is what makes iOS
+   Safari silently fail to composite that child image (it renders blank). */
+.site-header.is-stuck::before {
+  opacity: 1;
+  background: color-mix(in srgb, var(--bone) 88%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+}
 
 .header-inner { display: flex; align-items: center; gap: clamp(1rem, 3vw, 2.5rem); }
 
@@ -646,7 +652,7 @@ legend { padding: 0; display: block; }
 .sun__sky::before {
   content: ""; position: absolute; top: 0; bottom: 0;
   left: calc(var(--pos, 44) * 1%); width: 1px;
-  background: linear-gradient(to bottom, rgba(168,124,46,.65), rgba(168,124,46,.02));
+  background: linear-gradient(to bottom, rgba(217,31,38,.65), rgba(217,31,38,.02));
 }
 .sun__knob {
   position: absolute; left: calc(var(--pos, 44) * 1%); top: var(--knob-y, 40%);
@@ -655,7 +661,7 @@ legend { padding: 0; display: block; }
   background: radial-gradient(circle at 34% 30%, var(--brass-lite), var(--brass) 62%, var(--brass-deep));
   color: var(--ink); display: grid; place-items: center;
   font-family: var(--display); font-weight: 800; font-size: clamp(.9rem, 1.9vw, 1.08rem);
-  box-shadow: 0 0 0 6px rgba(168,124,46,.16), 0 0 26px rgba(168,124,46,.34);
+  box-shadow: 0 0 0 6px rgba(217,31,38,.16), 0 0 26px rgba(217,31,38,.34);
 }
 
 /* ── the control: a real range input, so touch, mouse, keyboard and AT all
@@ -680,13 +686,13 @@ legend { padding: 0; display: block; }
   -webkit-appearance: none; width: 34px; height: 34px; margin-top: 6px;
   border-radius: 50%; border: 3px solid var(--ink);
   background: radial-gradient(circle at 34% 30%, var(--brass-lite), var(--brass) 66%, var(--brass-deep));
-  box-shadow: 0 0 0 4px rgba(168,124,46,.22), 0 6px 16px -6px rgba(22,21,26,.9);
+  box-shadow: 0 0 0 4px rgba(217,31,38,.22), 0 6px 16px -6px rgba(22,21,26,.9);
   transition: box-shadow .25s var(--ease), transform .25s var(--ease);
 }
 .sun__range::-moz-range-thumb {
   width: 34px; height: 34px; border-radius: 50%; border: 3px solid var(--ink);
   background: radial-gradient(circle at 34% 30%, var(--brass-lite), var(--brass) 66%, var(--brass-deep));
-  box-shadow: 0 0 0 4px rgba(168,124,46,.22), 0 6px 16px -6px rgba(22,21,26,.9);
+  box-shadow: 0 0 0 4px rgba(217,31,38,.22), 0 6px 16px -6px rgba(22,21,26,.9);
 }
 .sun__range:hover::-webkit-slider-thumb { transform: scale(1.06); }
 .sun__range:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 5px var(--brass-lite); }
@@ -695,8 +701,8 @@ legend { padding: 0; display: block; }
 .sun__range:not(.is-touched)::-webkit-slider-thumb { animation: knobPulse 2.4s var(--ease-io) infinite; }
 .sun__range:not(.is-touched)::-moz-range-thumb { animation: knobPulse 2.4s var(--ease-io) infinite; }
 @keyframes knobPulse {
-  0%, 100% { box-shadow: 0 0 0 4px rgba(168,124,46,.22), 0 6px 16px -6px rgba(22,21,26,.9); }
-  50%      { box-shadow: 0 0 0 12px rgba(168,124,46,0), 0 6px 16px -6px rgba(22,21,26,.9); }
+  0%, 100% { box-shadow: 0 0 0 4px rgba(217,31,38,.22), 0 6px 16px -6px rgba(22,21,26,.9); }
+  50%      { box-shadow: 0 0 0 12px rgba(217,31,38,0), 0 6px 16px -6px rgba(22,21,26,.9); }
 }
 
 .sun__stops { display: flex; justify-content: space-between; margin-top: .5rem; }
@@ -812,7 +818,7 @@ legend { padding: 0; display: block; }
   border: 1px solid rgba(250,245,233,.12);
   transition: background .35s var(--ease), border-color .35s var(--ease), transform .35s var(--ease);
 }
-.repair__phone:hover { background: rgba(168,124,46,.14); border-color: var(--brass); transform: translateX(4px); }
+.repair__phone:hover { background: rgba(217,31,38,.14); border-color: var(--brass); transform: translateX(4px); }
 .repair__phone b { font-variant-numeric: tabular-nums; font-family: var(--display); font-size: 1.5rem; font-weight: 800; letter-spacing: .02em; }
 .repair__phone span { font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--bone-3); }
 
@@ -995,9 +1001,9 @@ legend { padding: 0; display: block; }
 }
 .works__tag::before {
   content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--brass);
-  box-shadow: 0 0 0 0 rgba(168,124,46,.6); animation: recPulse 2s ease-out infinite;
+  box-shadow: 0 0 0 0 rgba(217,31,38,.6); animation: recPulse 2s ease-out infinite;
 }
-@keyframes recPulse { 70%, 100% { box-shadow: 0 0 0 9px rgba(168,124,46,0); } }
+@keyframes recPulse { 70%, 100% { box-shadow: 0 0 0 9px rgba(217,31,38,0); } }
 
 .gallery {
   display: grid; gap: 3px;
@@ -1027,7 +1033,7 @@ legend { padding: 0; display: block; }
 /* lightbox */
 .lightbox {
   position: fixed; inset: 0; z-index: 200; display: none;
-  background: rgba(14,14,19,.94); backdrop-filter: blur(6px);
+  background: rgba(14,14,19,.94); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
   place-items: center; padding: clamp(1rem, 4vw, 3rem);
 }
 .lightbox.is-open { display: grid; animation: lbIn .3s var(--ease); }
@@ -1068,7 +1074,7 @@ legend { padding: 0; display: block; }
 .contact__row:last-child { border-bottom: 1px solid rgba(250,245,233,.14); }
 .contact__row dt { font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; color: var(--bone-3); }
 .contact__row dd { margin: 0; }
-.contact__row a { text-decoration: none; border-bottom: 1px solid rgba(168,124,46,.4); transition: border-color .3s, color .3s; }
+.contact__row a { text-decoration: none; border-bottom: 1px solid rgba(217,31,38,.4); transition: border-color .3s, color .3s; }
 .contact__row a:hover { color: var(--brass); border-color: var(--brass); }
 .contact__map {
   aspect-ratio: 4 / 3; border-radius: 3px; overflow: hidden;
