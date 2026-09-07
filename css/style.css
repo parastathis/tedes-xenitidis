@@ -1085,9 +1085,13 @@ legend { padding: 0; display: block; }
 @keyframes haloOut { 0% { opacity: .45; scale: .55; } 100% { opacity: 0; scale: 1.15; } }
 /* names are painted with a fat stroke of the page colour underneath, so a
    passing trail is knocked out behind the letters instead of tangling in them */
+/* stroke-width here is in USER UNITS, which the viewBox scales up — 1.5 was
+   landing as a 2.4px halo per side on 17px letters (over a quarter of the type),
+   and since each name is its own <text>, one label's white outline was eating
+   into the black of the one beside it. Keep it near a tenth of the type size. */
 .areamap__label {
   paint-order: stroke fill;
-  stroke: var(--marble); stroke-width: 1.5px; stroke-linejoin: round;
+  stroke: var(--marble); stroke-width: .34px; stroke-linejoin: round;
 }
 .areamap__label {
   fill: var(--ink); font-family: var(--display); font-weight: 800;
@@ -1097,7 +1101,7 @@ legend { padding: 0; display: block; }
 /* the portrait layout stacks six rows instead of three, so each viewBox unit
    is worth far less on screen — the type has to grow back against it */
 @media (max-width: 720px) {
-  .areamap__label { font-size: 4.4px; }
+  .areamap__label { font-size: 4.4px; stroke-width: .5px; }
   .areamap__pin.is-hub .areamap__label { font-size: 5.4px; }
 }
 @media (prefers-reduced-motion: reduce) {
