@@ -1,6 +1,9 @@
 # 2K PNG / original MP4 masters — regenerate from Higgsfield if needed
 assets/_source/
 
+# local editor / agent config, not part of the site
+.claude/
+
 # OS noise
 Thumbs.db
 .DS_Store

@@ -647,10 +647,15 @@ const GALLERY = [
          dot, and with the box starting at 0 that name was sliced in half */
       const head = 6;
       const height = top + (rows - 1) * rowGap + 11 + head;
+      /* Safari will not reliably derive an inline SVG's height from its viewBox
+         when height is auto — it sized this one far larger than its box on
+         iOS. Stating the width and the ratio outright leaves nothing to infer. */
       const svg = el('svg', {
         viewBox: `-4 ${-head} 108 ${height}`, class: 'areamap__svg',
-        'aria-hidden': 'true', focusable: 'false', preserveAspectRatio: 'xMidYMid meet'
+        width: '100%', 'aria-hidden': 'true', focusable: 'false',
+        preserveAspectRatio: 'xMidYMid meet'
       });
+      svg.style.aspectRatio = `108 / ${height}`;
 
       /* one shoe print — sole and heel — reused for every step.
          The toe points along local -y, so a step rotates by its heading + 90°. */
