@@ -496,67 +496,30 @@ const GALLERY = [
 ];
 
 {
-  const host = $('#gallery');
-  const box  = $('#lightbox');
-  if (host && box) {
+  const host = $('#worksSlideshow');
+  if (host) {
     host.innerHTML = GALLERY.map(([src, cap], i) => `
-      <button type="button" class="gallery__item" data-i="${i}" data-reveal style="--d:${i * 45}ms">
-        <picture>
-          <source type="image/webp" sizes="(min-width:1100px) 25vw, (min-width:640px) 50vw, 100vw"
-                  srcset="${src}-560.webp 560w, ${src}-900.webp 900w">
-          <img src="${src}-900.webp" alt="${cap}" loading="lazy" decoding="async" width="900" height="675">
-        </picture>
-        <span class="gallery__cap">${cap}</span>
-      </button>`).join('');
-    document.dispatchEvent(new Event('reveal:scan'));
+      <img src="${src}-900.webp" alt="${cap}" width="900" height="675"
+           loading="${i === 0 ? 'eager' : 'lazy'}" decoding="async"
+           class="${i === 0 ? 'is-active' : ''}">`).join('');
 
-    const bImg = $('#lightboxImg');
-    const bCap = $('#lightboxCap');
-    let idx = 0, lastFocus = null;
-
-    const show = i => {
-      idx = (i + GALLERY.length) % GALLERY.length;
-      const [src, cap] = GALLERY[idx];
-      bImg.src = `${src}-900.webp`;
-      bImg.alt = cap;
-      bCap.textContent = cap;
+    const imgs = $$('img', host);
+    let i = 0, timer = null;
+    const advance = () => {
+      imgs[i].classList.remove('is-active');
+      i = (i + 1) % imgs.length;
+      imgs[i].classList.add('is-active');
     };
-    const open = i => {
-      lastFocus = document.activeElement;
-      show(i);
-      box.classList.add('is-open');
-      document.body.style.overflow = 'hidden';
-      $('.lightbox__close', box).focus();
-    };
-    const close = () => {
-      box.classList.remove('is-open');
-      document.body.style.overflow = '';
-      lastFocus?.focus?.();
-    };
-
-    host.addEventListener('click', e => {
-      const b = e.target.closest('.gallery__item');
-      if (b) open(+b.dataset.i);
-    });
-    box.addEventListener('click', e => {
-      if (e.target === box)                 { close(); return; }
-      if (e.target.closest('[data-lb-close]')) { close(); return; }
-      if (e.target.closest('[data-lb-prev]'))  show(idx - 1);
-      if (e.target.closest('[data-lb-next]'))  show(idx + 1);
-    });
-    addEventListener('keydown', e => {
-      if (!box.classList.contains('is-open')) return;
-      if (e.key === 'Escape')     { e.preventDefault(); close(); }
-      if (e.key === 'ArrowLeft')  { e.preventDefault(); show(idx - 1); }
-      if (e.key === 'ArrowRight') { e.preventDefault(); show(idx + 1); }
-      if (e.key === 'Tab') {
-        const f = $$('button', box).filter(el => el.offsetParent !== null);
-        if (!f.length) return;
-        const first = f[0], last = f[f.length - 1];
-        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    // paced like the works reel's own play/pause: only ticks while on
+    // screen, and never for visitors who asked for less motion
+    new IntersectionObserver(([en]) => {
+      if (en.isIntersecting && motionOK()) {
+        if (!timer) timer = setInterval(advance, 2000);
+      } else if (timer) {
+        clearInterval(timer);
+        timer = null;
       }
-    });
+    }).observe(host);
   }
 }
 
@@ -747,6 +710,52 @@ const FAQ = [
     });
 
     show(0);
+  }
+}
+
+/* ==========================================================================
+   ΕΠΙΚΟΙΝΩΝΙΑ — the shop's own pin, on a dark-styled map instead of a
+   default-chrome Google iframe. Google still handles turn-by-turn: the
+   "Οδηγίες στον χάρτη" button next to it links straight to Maps.
+   ========================================================================== */
+{
+  const el = $('#map');
+  if (el && window.L) {
+    const LAT = 37.9756093, LNG = 23.7676785; // Μαικήνα 82, Ζωγράφου — geocoded off Google's own place resolution
+    const boot = () => {
+      const map = L.map(el, {
+        center: [LAT, LNG], zoom: 16, scrollWheelZoom: false,
+        attributionControl: false, zoomControl: false
+      });
+      // Leaflet's own "Leaflet" prefix is a courtesy, not a licence term (BSD-2),
+      // so it goes; the OSM/CARTO credit below is the part that must stay.
+      L.control.attribution({ position: 'bottomright', prefix: false })
+        .addAttribution('&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>')
+        .addTo(map);
+      L.control.zoom({ position: 'bottomright' }).addTo(map);
+      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        subdomains: 'abcd', maxZoom: 19
+      }).addTo(map);
+
+      const pin = L.divIcon({
+        className: 'map-pin',
+        html: '<span class="map-pin__dot"></span><span class="map-pin__ring"></span>',
+        iconSize: [26, 26], iconAnchor: [13, 13]
+      });
+      L.marker([LAT, LNG], { icon: pin, keyboard: false })
+        .addTo(map)
+        .bindPopup('<strong>ΚΕΝΤΑΥΡΟΣ</strong><br>Μαικήνα 82, Ζωγράφου 15771')
+        .openPopup();
+
+      // a plain click re-enables the scroll-zoom the map booted without,
+      // so the page keeps scrolling normally until you actually mean to zoom
+      el.addEventListener('click', () => map.scrollWheelZoom.enable(), { once: true });
+    };
+    // Leaflet needs the container laid out before it measures tiles — wait
+    // until the map is actually on screen, same gate as the ambient loops.
+    new IntersectionObserver(([en], obs) => {
+      if (en.isIntersecting) { boot(); obs.disconnect(); }
+    }).observe(el);
   }
 }
 

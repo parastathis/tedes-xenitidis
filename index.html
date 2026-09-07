@@ -24,6 +24,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;600;700&family=Sofia+Sans+Extra+Condensed:wght@800;900&display=swap&subset=greek,latin">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <link rel="stylesheet" href="css/style.css">
 <link rel="icon" href="assets/img/logo-kentauros-192.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/img/logo-kentauros-192.png">
@@ -394,7 +395,7 @@
       <span class="works__tag">Από το αρχείο έργων</span>
     </div>
 
-    <div class="gallery" id="gallery"></div>
+    <div class="slideshow" id="worksSlideshow" role="img" aria-label="Στιγμιότυπα από έργα της ΚΕΝΤΑΥΡΟΣ, εναλλάσσονται αυτόματα"></div>
   </div>
 </section>
 
@@ -658,12 +659,8 @@
       </div>
     </div>
 
-    <div class="contact__map" data-reveal style="--d:120ms">
-      <iframe
-        title="Χάρτης — Μαικήνα 82, Ζωγράφου"
-        src="https://www.google.com/maps?q=%CE%9C%CE%B1%CE%B9%CE%BA%CE%AE%CE%BD%CE%B1%2082%2C%20%CE%96%CF%89%CE%B3%CF%81%CE%AC%CF%86%CE%BF%CF%85&output=embed"
-        loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-    </div>
+    <div class="contact__map" id="map" data-reveal style="--d:120ms"
+         role="img" aria-label="Χάρτης — το εργαστήριο στη Μαικήνα 82, Ζωγράφου"></div>
   </div>
 </section>
 
@@ -696,23 +693,7 @@
   </a>
 </div>
 
-<!-- gallery lightbox -->
-<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Προβολή έργου">
-  <button type="button" class="lightbox__btn lightbox__close" data-lb-close aria-label="Κλείσιμο">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
-  </button>
-  <button type="button" class="lightbox__btn lightbox__btn--prev" data-lb-prev aria-label="Προηγούμενο">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>
-  </button>
-  <button type="button" class="lightbox__btn lightbox__btn--next" data-lb-next aria-label="Επόμενο">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>
-  </button>
-  <figure class="lightbox__fig">
-    <img id="lightboxImg" alt="" width="900" height="675">
-    <figcaption class="lightbox__cap" id="lightboxCap"></figcaption>
-  </figure>
-</div>
-
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin="" defer></script>
 <script src="js/app.js" defer></script>
 </body>
 </html>
