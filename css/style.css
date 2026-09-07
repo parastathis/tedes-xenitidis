@@ -244,42 +244,39 @@ legend { padding: 0; display: block; }
   font-size: 1.62rem; letter-spacing: .03em; color: var(--bone);
   transition: color .4s var(--ease);
 }
+/* the strapline runs in the emblem's own red, to tie it to the mark beside it.
+   It is 10px type, so on the pale stuck header it steps down to the deeper red
+   — the bright one only clears AA against the dark header. */
 .wordmark__sub {
-  font-size: .58rem; letter-spacing: .26em; text-transform: uppercase;
-  font-weight: 600; color: var(--brass); margin-top: .18rem;
+  font-size: .64rem; letter-spacing: .24em; text-transform: uppercase;
+  font-weight: 700; color: var(--red); margin-top: .2rem;
 }
 .is-stuck .wordmark__name { color: var(--ink); }
-.is-stuck .wordmark__sub { color: var(--wine); }
+.is-stuck .wordmark__sub { color: var(--wine-soft); }
 
-.site-nav { margin-left: auto; display: flex; align-items: center; gap: clamp(.9rem, 2vw, 2rem); }
+.site-nav { margin-left: auto; display: flex; align-items: center; gap: clamp(.7rem, 1.1vw, 1.25rem); }
+/* The hard-edged chip belongs on things you press — buttons and the burger.
+   The nav wears a red rule instead, swiping out from under the label the way
+   the one under «ΣΚΙΑ» draws itself in. */
 .site-nav a {
-  text-decoration: none; font-weight: 600; font-size: var(--step--1);
-  letter-spacing: .05em; text-transform: uppercase; color: var(--bone);
-  position: relative; padding-block: .35rem;
-  transition: color .4s var(--ease);
+  text-decoration: none; font-weight: 700; font-size: 1rem;
+  letter-spacing: .03em; text-transform: uppercase; color: var(--bone);
+  position: relative; padding: .4rem .16rem;
   /* multi-word labels ("Το φως") were wrapping to two lines and knocking
      themselves out of alignment with the rest of the row */
   white-space: nowrap;
+  transition: color .3s var(--ease);
 }
-/* nav links pick up the same hard edge on hover — the label sits into a
-   bordered chip and presses onto its shadow, exactly like the buttons */
-.site-nav a {
-  padding: .34rem .6rem; border-radius: var(--edge-radius);
-  border: 2px solid transparent;
-  transition: color .3s var(--ease), background .2s var(--ease),
-              border-color .2s var(--ease), box-shadow .18s var(--ease), transform .18s var(--ease);
+.site-nav a::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px;
+  background: var(--red);
+  transform: scaleX(0); transform-origin: right;
+  transition: transform .45s var(--ease);
 }
-.site-nav a:hover, .site-nav a:focus-visible {
-  background: var(--bone); color: var(--ink);
-  border-color: var(--ink);
-  box-shadow: 3px 3px 0 0 var(--brass);
-  transform: translate(-1px, -1px);
+.site-nav a:hover::after, .site-nav a:focus-visible::after {
+  transform: scaleX(1); transform-origin: left;
 }
 .is-stuck .site-nav a { color: var(--ink); }
-.is-stuck .site-nav a:hover, .is-stuck .site-nav a:focus-visible {
-  background: var(--wine); color: var(--marble); border-color: var(--ink);
-  box-shadow: 3px 3px 0 0 var(--ink);
-}
 
 .header-phone {
   font-variant-numeric: tabular-nums;
@@ -1042,6 +1039,12 @@ legend { padding: 0; display: block; }
   padding-inline: clamp(1rem, 4vw, 3rem);
 }
 .areamap__svg { display: block; width: 100%; height: auto; }
+/* On a wide screen the four-across walk was running the full bleed and eating
+   most of the viewport. Scaling the whole drawing to 60% keeps every
+   proportion — dots, prints and type shrink together — and takes ~40% off it. */
+@media (min-width: 901px) {
+  .areamap__svg { width: 60%; margin-inline: auto; }
+}
 .areamap__trails path { fill: none; stroke: none; }
 
 .areamap__step { fill: var(--ink); opacity: 0; }

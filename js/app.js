@@ -625,7 +625,7 @@ const GALLERY = [
       /* Fewer columns means more rows AND bigger type, so the rows have to open
          up or the names collide with the row beneath. Vertical space is the one
          thing a phone has plenty of. */
-      const rowGap = cols === 2 ? 19 : cols === 3 ? 16 : 13;
+      const rowGap = cols === 2 ? 21 : cols === 3 ? 17 : 13.5;
       const top = 7;
       const colX = c => cols === 1 ? 50 : padX + ((100 - padX * 2) / (cols - 1)) * c;
 
@@ -643,9 +643,12 @@ const GALLERY = [
       });
 
       host.textContent = '';
-      const height = top + (rows - 1) * rowGap + 11;
+      /* headroom at the top: the first row's turn stop wears its name ABOVE the
+         dot, and with the box starting at 0 that name was sliced in half */
+      const head = 6;
+      const height = top + (rows - 1) * rowGap + 11 + head;
       const svg = el('svg', {
-        viewBox: `-4 0 108 ${height}`, class: 'areamap__svg',
+        viewBox: `-4 ${-head} 108 ${height}`, class: 'areamap__svg',
         'aria-hidden': 'true', focusable: 'false', preserveAspectRatio: 'xMidYMid meet'
       });
 
