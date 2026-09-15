@@ -1107,7 +1107,12 @@ legend { padding: 0; display: block; }
 /* on a phone the label is dead weight — the icon and the caret say enough,
    and the sticky ΚΑΛΕΣΕ bar is the primary call target down there anyway */
 @media (max-width: 620px) {
-  .header-phone__label { display: none; }
+  /* hidden VISUALLY, not with display:none: both SVGs inside are aria-hidden,
+     so dropping the text would leave the button with no accessible name */
+  .header-phone__label {
+    position: absolute; width: 1px; height: 1px; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
+  }
   .header-phone { padding: .5rem .62rem; }
 
   /* A 20rem panel hung off the right edge of a compact trigger starts 25px
@@ -1120,6 +1125,28 @@ legend { padding: 0; display: block; }
     top: calc(100% + .5rem);
     left: var(--gutter); right: var(--gutter);
     width: auto;
+  }
+}
+
+/* Three items in a row that only ever fitted two. The wordmark, the call
+   trigger and the burger measured 397px inside 333px of gutter at 375px wide,
+   and `overflow-x: clip` on <body> was quietly eating the right-hand end of
+   ΜΕΝΟΥ rather than scrolling. Below 440px the wordmark steps down and both
+   controls go icon-only — matched pair, ~297px, room to spare. */
+@media (max-width: 440px) {
+  .header-inner { gap: .75rem; }
+  .wordmark { gap: .55rem; }
+  .wordmark__name { font-size: 1.24rem; letter-spacing: .02em; }
+  .wordmark__sub { font-size: .52rem; letter-spacing: .16em; }
+  .wordmark__logo { width: 34px; height: 34px; }
+  .is-stuck .wordmark__logo { width: 32px; height: 32px; }
+
+  .nav-toggle { margin-left: .5rem; padding: .6rem .7rem; gap: 0; }
+  /* visually hidden, not display:none — the bars are aria-hidden, so this text
+     is the button's only accessible name */
+  .nav-toggle__label {
+    position: absolute; width: 1px; height: 1px; margin: -1px;
+    overflow: hidden; clip-path: inset(50%); white-space: nowrap;
   }
 }
 
@@ -1514,7 +1541,7 @@ legend { padding: 0; display: block; }
   /* The header trigger stopped matching that rule the moment it became a
      <button>, and with its label hidden it collapsed to 35px beside a 44px
      ΜΕΝΟΥ. Both of these are thumb targets; both get the full 44. */
-  .header-phone, .reach__region { min-height: 44px; }
+  .header-phone, .nav-toggle, .reach__region { min-height: 44px; }
   .actionbar a[href^="tel:"], .actionbar a[href^="viber:"] {
     display: grid; min-height: 56px; padding-block: .8rem;
   }
