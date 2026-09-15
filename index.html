@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Τέντες Ζωγράφου | ΚΕΝΤΑΥΡΟΣ – Ξενιτίδης | Πέργκολες & Επισκευές Τεντών</title>
-<meta name="description" content="Βιοτεχνία τεντών στη Ζωγράφου, Μαικήνα 82. Τέντες, κασετίνες, πέργκολες, επισκευές &amp; αλλαγή τεντόπανου. Δωρεάν μέτρηση στον χώρο σας. ☎ 210 7751368.">
+<title>Τέντες Ζωγράφου &amp; Πανελλαδικά | ΚΕΝΤΑΥΡΟΣ – Ξενιτίδης | Πέργκολες &amp; Επισκευές</title>
+<meta name="description" content="Βιοτεχνία τεντών από το 1965 — Μαικήνα 82, Ζωγράφου. Τέντες, κασετίνες, πέργκολες, επισκευές &amp; αλλαγή τεντόπανου. Μελέτη και τοποθέτηση σε όλη την Ελλάδα. Δωρεάν μέτρηση. ☎ 210 7751368.">
 <link rel="canonical" href="https://www.tentes-kentayros.gr/">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="geo.region" content="GR-A1">
@@ -13,18 +13,27 @@
 <meta property="og:type" content="website">
 <meta property="og:locale" content="el_GR">
 <meta property="og:site_name" content="ΚΕΝΤΑΥΡΟΣ – Τέντες Ξενιτίδης">
-<meta property="og:title" content="Τέντες Ζωγράφου | ΚΕΝΤΑΥΡΟΣ – Ξενιτίδης">
-<meta property="og:description" content="Τέντες, πέργκολες και συστήματα σκίασης από τη δική μας βιοτεχνία στη Ζωγράφου. Μελέτη, κατασκευή, τοποθέτηση, επισκευές.">
+<meta property="og:title" content="Τέντες Ζωγράφου &amp; πανελλαδικά | ΚΕΝΤΑΥΡΟΣ – Ξενιτίδης">
+<meta property="og:description" content="Τέντες, πέργκολες και συστήματα σκίασης από τη δική μας βιοτεχνία στη Ζωγράφου. Μελέτη, κατασκευή και τοποθέτηση σε όλη την Ελλάδα.">
 <meta property="og:url" content="https://www.tentes-kentayros.gr/">
 <meta property="og:image" content="https://www.tentes-kentayros.gr/assets/img/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Τέντα ΚΕΝΤΑΥΡΟΣ σε μπαλκόνι πολυκατοικίας στην Αθήνα.">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://www.tentes-kentayros.gr/assets/img/og.jpg">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+
+<!-- Content-Security-Policy. Real HTTP headers are the authority (serve.py sets
+     these plus frame-ancestors, which a meta tag cannot carry) - this meta copy
+     is what protects the page on a plain static host that sends no headers. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tile.openstreetmap.org https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org; media-src 'self'; connect-src 'self'; worker-src 'none'; frame-src 'none'">
 <meta name="theme-color" content="#16151A">
 <meta name="color-scheme" content="light dark">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;600;700&family=Sofia+Sans+Extra+Condensed:wght@800;900&display=swap&subset=greek,latin">
-<link rel="stylesheet" href="assets/vendor/leaflet.css">
 <link rel="stylesheet" href="css/style.css">
 <link rel="icon" href="assets/img/logo-kentauros-192.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/img/logo-kentauros-192.png">
@@ -54,18 +63,21 @@
         "postalCode": "15771",
         "addressCountry": "GR"
       },
-      "areaServed": [
-        { "@type": "City", "name": "Ζωγράφου" },
-        { "@type": "City", "name": "Καισαριανή" },
-        { "@type": "City", "name": "Βύρωνας" },
-        { "@type": "City", "name": "Παγκράτι" },
-        { "@type": "City", "name": "Ιλίσια" },
-        { "@type": "City", "name": "Γουδή" },
-        { "@type": "City", "name": "Αμπελόκηποι" },
-        { "@type": "City", "name": "Χολαργός" },
-        { "@type": "City", "name": "Παπάγου" },
-        { "@type": "AdministrativeArea", "name": "Αττική" }
-      ],
+      "areaServed": {
+        "@type": "Country",
+        "name": "Ελλάδα",
+        "alternateName": "Greece",
+        "sameAs": "https://www.wikidata.org/wiki/Q41"
+      },
+      "foundingDate": "1965",
+      "logo": "https://www.tentes-kentayros.gr/assets/img/logo-kentauros.png",
+      "image": "https://www.tentes-kentayros.gr/assets/img/og.jpg",
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 37.9756093,
+        "longitude": 23.7676785
+      },
+      "hasMap": "https://www.google.com/maps/search/?api=1&query=%CE%9C%CE%B1%CE%B9%CE%BA%CE%AE%CE%BD%CE%B1+82+%CE%96%CF%89%CE%B3%CF%81%CE%AC%CF%86%CE%BF%CF%85",
       "priceRange": "€€",
       "currenciesAccepted": "EUR",
       "hasOfferCatalog": {
@@ -98,7 +110,7 @@
         {
           "@type": "Question",
           "name": "Πόσο κοστίζει μια τέντα μπαλκονιού;",
-          "acceptedAnswer": { "@type": "Answer", "text": "Δεν υπάρχει ενιαία τιμή. Το κόστος εξαρτάται από τις διαστάσεις, τον τύπο κατασκευής (βραχίονες, αντηρίδες, κασετίνα, χειροκίνητο ή ηλεκτρικό), το ύφασμα και τη δυσκολία της τοποθέτησης. Γι' αυτό ερχόμαστε και μετράμε τον χώρο σας πριν σας δώσουμε προσφορά." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Δεν υπάρχει ενιαία τιμή, και όποιος σου δώσει τιμή στο τηλέφωνο χωρίς να δει τον χώρο μαντεύει. Το κόστος εξαρτάται από τις διαστάσεις, τον τύπο κατασκευής (βραχίονες, αντηρίδες, κασετίνα, χειροκίνητο ή ηλεκτρικό), το ύφασμα και τη δυσκολία της τοποθέτησης. Γι’ αυτό ερχόμαστε, μετράμε και δίνουμε γραπτή προσφορά." }
         },
         {
           "@type": "Question",
@@ -113,22 +125,22 @@
         {
           "@type": "Question",
           "name": "Χρειάζεται άδεια για τέντα σε πολυκατοικία;",
-          "acceptedAnswer": { "@type": "Answer", "text": "Για μπαλκόνι σε πολυκατοικία συνήθως απαιτείται συμφωνία με τον κανονισμό της πολυκατοικίας ως προς το χρώμα και τον τύπο, ώστε η όψη να παραμείνει ενιαία. Για κατάστημα σε κοινόχρηστο χώρο ή πεζοδρόμιο εμπλέκεται και ο δήμος. Θα σας πούμε τι ισχύει στη δική σας περίπτωση όταν δούμε τον χώρο." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Για μπαλκόνι σε πολυκατοικία συνήθως παίζει ρόλο ο κανονισμός της πολυκατοικίας ως προς το χρώμα και τον τύπο, ώστε η όψη να μείνει ενιαία. Για κατάστημα που βγαίνει πάνω από πεζοδρόμιο ή κοινόχρηστο χώρο εμπλέκεται και ο δήμος. Θα σου πούμε τι ισχύει στη δική σου περίπτωση όταν δούμε τον χώρο." }
         },
         {
           "@type": "Question",
           "name": "Ποιες περιοχές καλύπτετε;",
-          "acceptedAnswer": { "@type": "Answer", "text": "Έδρα μας είναι η Ζωγράφου, Μαικήνα 82. Εξυπηρετούμε Ζωγράφου, Ιλίσια, Γουδή, Καισαριανή, Βύρωνα, Παγκράτι, Αμπελόκηπους, Χολαργό, Παπάγου και ευρύτερα την Αττική." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Όλη την Ελλάδα. Το εργαστήριο είναι στη Ζωγράφου, Μαικήνα 82, και από εκεί βγαίνει κάθε κατασκευή. Εξυπηρετούμε όλη την Αττική, την ηπειρωτική Ελλάδα και τα νησιά — Κρήτη, Κυκλάδες, Δωδεκάνησα, Ιόνιο, Βόρειο Αιγαίο. Για δουλειά εκτός Αττικής συνεννοούμαστε από το τηλέφωνο και οργανώνουμε μέτρηση και τοποθέτηση μαζί." }
         },
         {
           "@type": "Question",
           "name": "Αντέχει η τέντα στον αέρα;",
-          "acceptedAnswer": { "@type": "Answer", "text": "Καμία ανοιχτή τέντα δεν είναι κατασκευασμένη να μένει ανοιχτή σε δυνατό αέρα. Η σωστή στήριξη στον φέροντα τοίχο και ένας αισθητήρας ανέμου που μαζεύει αυτόματα το πανί κάνουν τη μεγαλύτερη διαφορά στη διάρκεια ζωής της κατασκευής." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Καμία ανοιχτή τέντα δεν είναι φτιαγμένη να μένει ανοιχτή σε δυνατό αέρα — ούτε η ακριβότερη. Αυτό που κάνει πραγματικά τη διαφορά στη διάρκεια ζωής της είναι η σωστή στήριξη στον φέροντα τοίχο και ένας αισθητήρας ανέμου που τη μαζεύει μόνος του όταν δεν είσαι σπίτι." }
         },
         {
           "@type": "Question",
           "name": "Πόσο χρόνο θέλει η κατασκευή και η τοποθέτηση;",
-          "acceptedAnswer": { "@type": "Answer", "text": "Μετά τη μέτρηση και την έγκριση της προσφοράς, ο χρόνος εξαρτάται από τον τύπο κατασκευής και τη διαθεσιμότητα του υφάσματος. Θα σας δώσουμε συγκεκριμένο χρονοδιάγραμμα μαζί με την προσφορά — όχι αόριστες υποσχέσεις." }
+          "acceptedAnswer": { "@type": "Answer", "text": "Μετά τη μέτρηση και την έγκριση της προσφοράς, ο χρόνος εξαρτάται από τον τύπο κατασκευής και τη διαθεσιμότητα του υφάσματος. Θα πάρεις συγκεκριμένο χρονοδιάγραμμα μαζί με την προσφορά — όχι αόριστες υποσχέσεις." }
         }
       ]
     }
@@ -156,15 +168,49 @@
       <a href="#fos">Το φως</a>
       <a href="#yfasma">Υφάσματα</a>
       <a href="#erga">Έργα</a>
+      <a href="#kalypsi">Κάλυψη</a>
       <a href="#episkeues">Επισκευές</a>
-      <a href="#perioxes">Περιοχές</a>
       <a href="#prosfora">Προσφορά</a>
     </nav>
 
-    <a class="header-phone" href="tel:+302107751368" aria-label="Τηλεφωνήστε στο 210 7751368">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.4 1.8.6 2.8.8a2 2 0 0 1 1.7 2z"/></svg>
-      210 775 1368
-    </a>
+    <!-- Without JS this is a plain link to the workshop line. app.js upgrades it
+         into the trigger for the panel below, so a visitor picks the line they
+         want instead of the header hard-coding one number. -->
+    <div class="callpick" id="callpick">
+      <a class="header-phone" id="callTrigger" href="tel:+302107751368">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.4 1.8.6 2.8.8a2 2 0 0 1 1.7 2z"/></svg>
+        <span class="header-phone__label">Κάλεσέ μας</span>
+        <svg class="header-phone__caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+      </a>
+
+      <div class="callpick__panel" id="callPanel" hidden>
+        <p class="callpick__head">Διάλεξε γραμμή</p>
+        <a class="callpick__row" href="tel:+302107751368">
+          <span class="callpick__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.4 1.8.6 2.8.8a2 2 0 0 1 1.7 2z"/></svg>
+          </span>
+          <span class="callpick__txt"><span>Σταθερό · εργαστήριο</span><b>210 775 1368</b></span>
+        </a>
+        <a class="callpick__row" href="tel:+306936743560">
+          <span class="callpick__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="2" width="12" height="20" rx="2.5"/><path d="M11 18.5h2"/></svg>
+          </span>
+          <span class="callpick__txt"><span>Κινητό</span><b>693 674 3560</b></span>
+        </a>
+        <a class="callpick__row" href="viber://chat?number=%2B306936743560">
+          <span class="callpick__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.2 9.2 0 0 1-4.3-1L3 20l1.1-4.4a8.4 8.4 0 0 1-1.1-4.1 8.4 8.4 0 0 1 9-8.4 8.4 8.4 0 0 1 9 8.4z"/></svg>
+          </span>
+          <span class="callpick__txt"><span>Viber</span><b>693 674 3560</b></span>
+        </a>
+        <a class="callpick__row" href="mailto:tenteskentayros@hotmail.gr">
+          <span class="callpick__ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="m3 6 9 6.5L21 6"/></svg>
+          </span>
+          <span class="callpick__txt"><span>Email</span><b>tenteskentayros@hotmail.gr</b></span>
+        </a>
+      </div>
+    </div>
 
     <button class="nav-toggle" id="navToggle" aria-expanded="false" aria-controls="mobileNav">
       <span class="nav-toggle__bars" aria-hidden="true"><span></span><span></span><span></span></span>
@@ -179,8 +225,8 @@
   <a href="#fos">Το φως</a>
   <a href="#yfasma">Υφάσματα</a>
   <a href="#erga">Έργα</a>
+  <a href="#kalypsi">Κάλυψη</a>
   <a href="#episkeues">Επισκευές</a>
-  <a href="#perioxes">Περιοχές</a>
   <a href="#prosfora">Προσφορά</a>
   <p class="mobile-nav__foot">
     Μαικήνα 82, Ζωγράφου<br>
@@ -226,7 +272,7 @@
         <a class="btn btn--on-dark btn--lg" href="tel:+302107751368">210 775 1368</a>
       </div>
       <p class="hero__meta">
-        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg> Ζωγράφου &amp; γύρω Αττική</span>
+        <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></svg> Σε όλη την Ελλάδα</span>
         <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M3 21V8l9-5 9 5v13"/><path d="M9 21v-6h6v6"/></svg> Δική μας βιοτεχνία</span>
         <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M14.7 6.3a5 5 0 0 0 6.6 6.6l-8 8a2.8 2.8 0 0 1-4-4z"/></svg> Επισκευές &amp; αλλαγή πανιού</span>
       </p>
@@ -357,16 +403,69 @@
           όχι σε οθόνη.
         </p>
         <div class="actions" style="margin-top:1.75rem">
-          <a class="btn btn--primary" href="#prosfora">Δες το δειγματολόγιο</a>
+          <a class="btn btn--primary" href="#pania">Δες το δειγματολόγιο</a>
         </div>
       </div>
 
       <div data-reveal style="--d:120ms">
-        <p class="eyebrow eyebrow--light" style="margin-bottom:1rem">Ενδεικτικές αποχρώσεις</p>
-        <div class="swatches" id="swatches"></div>
-        <p style="font-size:.78rem;color:var(--bone-3);margin-top:1rem;line-height:1.5">
-          Ενδεικτικές οικογένειες αποχρώσεων. Οι πραγματικοί κωδικοί υφασμάτων
-          επιλέγονται από το δειγματολόγιο στο κατάστημα.
+        <p class="eyebrow eyebrow--light" style="margin-bottom:1rem">Τι κρίνει το πανί</p>
+        <ul class="fabric__facts">
+          <li>
+            <b>Πόση ζέστη μένει απ’ έξω</b>
+            Ένα πυκνό, σκούρο πανί κόβει περισσότερη ακτινοβολία· ένα ανοιχτό
+            αφήνει το μπαλκόνι φωτεινό αλλά ζεσταίνει πιο εύκολα.
+          </li>
+          <li>
+            <b>Τι χρώμα ρίχνει μέσα στο σπίτι</b>
+            Η σκιά παίρνει το χρώμα του υφάσματος. Στις 5 το απόγευμα ένα
+            μπορντό πανί βάφει το σαλόνι — ένα κρεμ όχι.
+          </li>
+          <li>
+            <b>Πόσο θα ξεθωριάσει</b>
+            Τα ακρυλικά βαμμένα στη μάζα κρατούν το χρώμα τους χρόνια στον
+            αττικό ήλιο. Τα βαμμένα μόνο επιφανειακά, όχι.
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════ ΤΟ ΠΑΝΙ -->
+<section class="section pania" id="pania" aria-labelledby="pania-title">
+  <div class="wrap">
+    <div class="section__head" data-reveal>
+      <p class="eyebrow eyebrow--light">Το δειγματολόγιό μας</p>
+      <h2 class="section__title" id="pania-title">Διάλεξε το πανί σου</h2>
+      <p class="section__lede">
+        Δεκαπέντε υφάσματα, φωτογραφημένα σελίδα-σελίδα από το δειγματολόγιο που
+        έχουμε στο εργαστήριο — όχι χρώματα φτιαγμένα σε οθόνη. Διάλεξε αυτό που
+        σου αρέσει και έρχεται μαζί με το αίτημά σου.
+      </p>
+    </div>
+
+    <div class="pania__shell" data-reveal>
+      <figure class="pania__stage">
+        <img class="pania__shot" id="paniaShot" src="assets/img/f-2307-700.webp"
+             alt="Ύφασμα τέντας, κωδικός Design 2307 — «Τουλίπα»"
+             width="700" height="700" loading="lazy" decoding="async">
+        <figcaption class="pania__meta">
+          <span class="pania__code" id="paniaCode">Design 2307</span>
+          <span class="pania__name" id="paniaName">Τουλίπα</span>
+          <span class="pania__desc" id="paniaDesc">Κρεμ βάση με αραιή τουλίπα — διακριτικό μοτίβο που δεν κουράζει σε μεγάλο άνοιγμα.</span>
+        </figcaption>
+        <a class="btn btn--primary pania__cta" id="paniaCta" href="#prosfora">
+          Βάλ’ το στην προσφορά μου
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </figure>
+
+      <div class="pania__pick">
+        <div class="pania__grid" id="paniaGrid" role="radiogroup" aria-label="Υφάσματα τέντας από το δειγματολόγιο"></div>
+        <p class="pania__note">
+          Οι φωτογραφίες είναι από το πραγματικό δειγματολόγιο, τραβηγμένες στο φως της ημέρας.
+          Καμία οθόνη δεν αποδίδει ακριβώς την απόχρωση ενός υφάσματος — γι’ αυτό φέρνουμε
+          το δειγματολόγιο μαζί μας στη μέτρηση, να το δεις στο φως του δικού σου μπαλκονιού.
         </p>
       </div>
     </div>
@@ -399,6 +498,61 @@
   </div>
 </section>
 
+<!-- ══════════════════════════════════════════════════ ΚΑΛΥΨΗ -->
+<section class="section reach" id="kalypsi" aria-labelledby="kalypsi-title">
+  <div class="wrap">
+    <div class="reach__grid">
+      <div data-reveal>
+        <p class="eyebrow eyebrow--light">Πανελλαδική κάλυψη</p>
+        <h2 class="section__title" id="kalypsi-title">Μετράμε στη Ζωγράφου.<br>Τοποθετούμε <em>σε όλη την Ελλάδα</em>.</h2>
+        <p class="section__lede">
+          Το εργαστήριο είναι στη Μαικήνα 82 — εκεί κόβεται, ράβεται και συναρμολογείται
+          κάθε κατασκευή. Από εκεί φεύγει για την Αττική, για την ηπειρωτική Ελλάδα και
+          για τα νησιά. Πες μας πού είσαι και κανονίζουμε τη μέτρηση.
+        </p>
+        <ul class="reach__facts">
+          <li><b>13</b><span>περιφέρειες — όλη η επικράτεια</span></li>
+          <li><b>Νησιά</b><span>Κρήτη, Κυκλάδες, Δωδεκάνησα, Ιόνιο, Β. Αιγαίο</span></li>
+          <li><b>Ένα συνεργείο</b><span>Μελέτη, κατασκευή και τοποθέτηση από εμάς</span></li>
+        </ul>
+        <div class="actions" style="margin-top:2rem">
+          <a class="btn btn--primary" href="#prosfora">Ζήτησε μέτρηση</a>
+          <a class="btn btn--on-dark" href="tel:+302107751368">210 775 1368</a>
+        </div>
+      </div>
+
+      <figure class="reach__fig" data-reveal style="--d:140ms">
+        <div class="reach__map" id="reachMap"></div>
+        <figcaption class="reach__legend">
+          <span><i class="reach__key reach__key--hub"></i> Εργαστήριο · Ζωγράφου</span>
+          <span><i class="reach__key"></i> Περιοχή που εξυπηρετούμε</span>
+        </figcaption>
+      </figure>
+    </div>
+
+    <!-- Pressing one lights that part of the map. Without JS they are plain
+         buttons that do nothing visible, and the list still reads as the list
+         of regions served — which is the content that matters here. -->
+    <ul class="reach__regions">
+      <li><button type="button" class="reach__region" data-region="attiki" aria-pressed="false">Αττική</button></li>
+      <li><button type="button" class="reach__region" data-region="thessaloniki" aria-pressed="false">Θεσσαλονίκη</button></li>
+      <li><button type="button" class="reach__region" data-region="kmakedonia" aria-pressed="false">Κεντρική Μακεδονία</button></li>
+      <li><button type="button" class="reach__region" data-region="dmakedonia" aria-pressed="false">Δυτική Μακεδονία</button></li>
+      <li><button type="button" class="reach__region" data-region="thraki" aria-pressed="false">Θράκη</button></li>
+      <li><button type="button" class="reach__region" data-region="thessalia" aria-pressed="false">Θεσσαλία</button></li>
+      <li><button type="button" class="reach__region" data-region="ipeiros" aria-pressed="false">Ήπειρος</button></li>
+      <li><button type="button" class="reach__region" data-region="sterea" aria-pressed="false">Στερεά Ελλάδα</button></li>
+      <li><button type="button" class="reach__region" data-region="peloponnisos" aria-pressed="false">Πελοπόννησος</button></li>
+      <li><button type="button" class="reach__region" data-region="evvoia" aria-pressed="false">Εύβοια</button></li>
+      <li><button type="button" class="reach__region" data-region="kriti" aria-pressed="false">Κρήτη</button></li>
+      <li><button type="button" class="reach__region" data-region="kyklades" aria-pressed="false">Κυκλάδες</button></li>
+      <li><button type="button" class="reach__region" data-region="dodekanisa" aria-pressed="false">Δωδεκάνησα</button></li>
+      <li><button type="button" class="reach__region" data-region="ionia" aria-pressed="false">Ιόνια Νησιά</button></li>
+      <li><button type="button" class="reach__region" data-region="vaigaio" aria-pressed="false">Βόρειο Αιγαίο</button></li>
+    </ul>
+  </div>
+</section>
+
 <!-- ══════════════════════════════════════════════════ ΕΠΙΣΚΕΥΕΣ -->
 <section class="section repair" id="episkeues" aria-labelledby="episkeues-title">
   <img class="repair__mark" src="assets/img/logo-kentauros.png" alt="" width="512" height="512" loading="lazy" decoding="async">
@@ -425,9 +579,6 @@
       <div class="repair__phones">
         <a class="repair__phone" href="tel:+302107751368">
           <span>Σταθερό · εργαστήριο</span><b>210 775 1368</b>
-        </a>
-        <a class="repair__phone" href="tel:+306970417549">
-          <span>Κινητό</span><b>697 041 7549</b>
         </a>
         <a class="repair__phone" href="tel:+306936743560">
           <span>Κινητό</span><b>693 674 3560</b>
@@ -587,6 +738,7 @@
           <label for="qNotes">Κάτι άλλο που πρέπει να ξέρουμε; <span style="text-transform:none;letter-spacing:0;font-weight:400">(προαιρετικό)</span></label>
           <textarea id="qNotes" name="notes" placeholder="π.χ. «βλέπει δύση», «είναι 4ος όροφος», «η παλιά είναι Somfy»"></textarea>
         </div>
+        <p class="wizard__fabric" id="wizardFabric" hidden></p>
         <div class="wizard__nav">
           <button type="button" class="wizard__back" data-back>← Πίσω</button>
           <button type="submit" class="btn btn--lg">Στείλε το αίτημα</button>
@@ -607,45 +759,12 @@
   </div>
 </section>
 
-<!-- ══════════════════════════════════════════════════ ΠΕΡΙΟΧΕΣ -->
-<section class="section section--marble" id="perioxes" aria-labelledby="perioxes-title">
+<!-- ══════════════════════════════════════════════════ ΣΥΧΝΕΣ ΕΡΩΤΗΣΕΙΣ -->
+<section class="section section--marble" id="erotiseis" aria-labelledby="faq-title">
   <div class="wrap">
     <div class="section__head" data-reveal>
-      <p class="eyebrow">Πού δουλεύουμε</p>
-      <h2 class="section__title" id="perioxes-title">Από τη Ζωγράφου<br>και γύρω</h2>
-      <p class="section__lede">
-        Το εργαστήριο είναι στη Μαικήνα 82. Όσο πιο κοντά είσαι, τόσο πιο γρήγορα ερχόμαστε
-        για μέτρηση — και τόσο πιο εύκολα επιστρέφουμε αν χρειαστεί κάτι μετά.
-      </p>
-      <!-- Order is the route itself: the workshop first, then outward by how
-           far the van has to go. JS walks this list in order and lays it out.
-           Without JS the chips stay exactly as they were. -->
-      <ul class="areas__list" id="areasList">
-        <!-- the list still says Ζωγράφου (that is the service area); the
-             diagram shows it as what it is on the route — the workshop -->
-        <li><span class="areas__chip areas__chip--primary" data-hub data-label="Εργαστήριο">Ζωγράφου</span></li>
-        <li><span class="areas__chip">Άνω Ιλίσια</span></li>
-        <li><span class="areas__chip">Ιλίσια</span></li>
-        <li><span class="areas__chip">Γουδή</span></li>
-        <li><span class="areas__chip">Καισαριανή</span></li>
-        <li><span class="areas__chip">Βύρωνας</span></li>
-        <li><span class="areas__chip">Παγκράτι</span></li>
-        <li><span class="areas__chip">Αμπελόκηποι</span></li>
-        <li><span class="areas__chip">Χολαργός</span></li>
-        <li><span class="areas__chip">Παπάγου</span></li>
-        <li><span class="areas__chip">Κέντρο Αθήνας</span></li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- full-bleed: the routes want the whole width, not the text column -->
-  <div class="areamap" id="areamap" data-reveal></div>
-
-  <div class="wrap">
-
-    <div class="section__head" style="margin-top:clamp(3rem,6vw,5rem);margin-bottom:1.5rem" data-reveal>
       <p class="eyebrow">Συχνές ερωτήσεις</p>
-      <h2 class="section__title" style="font-size:var(--step-3)">Αυτά μας ρωτάνε<br>στο τηλέφωνο</h2>
+      <h2 class="section__title" id="faq-title" style="font-size:var(--step-3)">Αυτά μας ρωτάνε<br>στο τηλέφωνο</h2>
     </div>
     <div class="faq" id="faq"></div>
   </div>
@@ -660,7 +779,7 @@
       <dl class="contact__rows">
         <div class="contact__row"><dt>Διεύθυνση</dt><dd>Μαικήνα 82, Ζωγράφου 15771, Αττική</dd></div>
         <div class="contact__row"><dt>Σταθερό</dt><dd><a href="tel:+302107751368">210 775 1368</a></dd></div>
-        <div class="contact__row"><dt>Κινητά</dt><dd><a href="tel:+306970417549">697 041 7549</a> · <a href="tel:+306936743560">693 674 3560</a></dd></div>
+        <div class="contact__row"><dt>Κινητό</dt><dd><a href="tel:+306936743560">693 674 3560</a></dd></div>
         <div class="contact__row"><dt>Email</dt><dd><a href="mailto:tenteskentayros@hotmail.gr">tenteskentayros@hotmail.gr</a></dd></div>
         <div class="contact__row"><dt>Ιδιοκτήτης</dt><dd>Στυλιανός Π. Ξενιτίδης</dd></div>
       </dl>
@@ -694,7 +813,7 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.5c.9.4 1.8.6 2.8.8a2 2 0 0 1 1.7 2z"/></svg>
     Κάλεσε
   </a>
-  <a href="viber://chat?number=%2B306970417549">
+  <a href="viber://chat?number=%2B306936743560">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.4 8.4 0 0 1-9 8.4 9.2 9.2 0 0 1-4.3-1L3 20l1.1-4.4a8.4 8.4 0 0 1-1.1-4.1 8.4 8.4 0 0 1 9-8.4 8.4 8.4 0 0 1 9 8.4z"/></svg>
     Viber
   </a>
@@ -704,9 +823,9 @@
   </a>
 </div>
 
-<!-- Leaflet 1.9.4, vendored rather than pulled off a CDN: a blocked or slow
-     third-party host was leaving the map an empty box on mobile. -->
-<script src="assets/vendor/leaflet.js" defer></script>
+<!-- Leaflet 1.9.4 is vendored (a blocked or slow third-party host was leaving
+     the map an empty box on mobile) and is NOT loaded here: app.js fetches it,
+     and its stylesheet, only once the contact map is approached. -->
 <script src="js/app.js" defer></script>
 </body>
 </html>

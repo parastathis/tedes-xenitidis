@@ -32,6 +32,30 @@ TYPES = {
 
 RANGE_RE = re.compile(r"bytes=(\d*)-(\d*)")
 
+# Sent on every response. A static host serves this site in production, so the
+# same list belongs in its config (nginx add_header / Netlify _headers / etc.);
+# index.html carries a <meta> copy of the CSP for hosts that send no headers at
+# all. frame-ancestors and X-Frame-Options can ONLY come from a real header,
+# which is why they live here and not in the markup.
+SECURITY_HEADERS = [
+    ("Content-Security-Policy",
+     "default-src 'self'; base-uri 'self'; object-src 'none'; "
+     "frame-ancestors 'none'; form-action 'self'; script-src 'self'; "
+     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+     "font-src 'self' https://fonts.gstatic.com; "
+     "img-src 'self' data: https://tile.openstreetmap.org "
+     "https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org "
+     "https://c.tile.openstreetmap.org; "
+     "media-src 'self'; connect-src 'self'; worker-src 'none'; frame-src 'none'"),
+    ("X-Content-Type-Options", "nosniff"),
+    ("X-Frame-Options", "DENY"),
+    ("Referrer-Policy", "strict-origin-when-cross-origin"),
+    ("Permissions-Policy",
+     "geolocation=(), camera=(), microphone=(), payment=(), usb=(), interest-cohort=()"),
+    ("Cross-Origin-Opener-Policy", "same-origin"),
+    ("Cross-Origin-Resource-Policy", "same-origin"),
+]
+
 
 class RangeHandler(SimpleHTTPRequestHandler):
     protocol_version = "HTTP/1.1"
@@ -41,7 +65,10 @@ class RangeHandler(SimpleHTTPRequestHandler):
         from urllib.parse import unquote
         rel = unquote(path).lstrip("/")
         full = os.path.normpath(os.path.join(ROOT, rel))
-        if not full.startswith(ROOT):          # no traversal out of the project
+        # A bare startswith() also accepts a SIBLING whose name merely begins
+        # with the project's ("...\\tedes-xenitidis-backup"), which is a way out
+        # of the tree. The separator is what makes it a containment test.
+        if full != ROOT and not full.startswith(ROOT + os.sep):
             return ROOT
         if os.path.isdir(full):
             full = os.path.join(full, "index.html")
@@ -50,6 +77,10 @@ class RangeHandler(SimpleHTTPRequestHandler):
     def guess_type(self, path):
         return TYPES.get(os.path.splitext(path)[1].lower()) \
             or mimetypes.guess_type(path)[0] or "application/octet-stream"
+
+    def send_security_headers(self):
+        for k, v in SECURITY_HEADERS:
+            self.send_header(k, v)
 
     def do_HEAD(self):
         path = self.translate_path(self.path)
@@ -60,6 +91,7 @@ class RangeHandler(SimpleHTTPRequestHandler):
         self.send_header("Content-Type", self.guess_type(path))
         self.send_header("Content-Length", str(os.path.getsize(path)))
         self.send_header("Accept-Ranges", "bytes")
+        self.send_security_headers()
         self.end_headers()
 
     def do_GET(self):
@@ -91,6 +123,7 @@ class RangeHandler(SimpleHTTPRequestHandler):
             length = end - start + 1
             self.send_response(206)
             self.send_header("Content-Type", ctype)
+            self.send_security_headers()
             self.send_header("Content-Range", f"bytes {start}-{end}/{size}")
             self.send_header("Content-Length", str(length))
             self.send_header("Accept-Ranges", "bytes")
@@ -112,6 +145,7 @@ class RangeHandler(SimpleHTTPRequestHandler):
 
         self.send_response(200)
         self.send_header("Content-Type", ctype)
+        self.send_security_headers()
         self.send_header("Content-Length", str(size))
         self.send_header("Accept-Ranges", "bytes")
         self.send_header("Cache-Control", "no-cache")

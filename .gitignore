@@ -7,3 +7,6 @@ assets/_source/
 # OS noise
 Thumbs.db
 .DS_Store
+
+# Python bytecode from serve.py
+__pycache__/

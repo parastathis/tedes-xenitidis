@@ -10,6 +10,11 @@ const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+/* The fabric the visitor picked in «Διάλεξε το πανί σου». The picker writes it,
+   the quote wizard reads it back into the request — so a choice made halfway
+   up the page is still on the email that leaves the bottom of it. */
+let chosenFabric = null;
+
 /* Motion media is an upgrade, never a requirement — every section is complete
    without it. We honour the two signals the user actually chose (reduced
    motion, data-saver) and deliberately ignore `effectiveType`: it is a guess,
@@ -350,7 +355,7 @@ const PRODUCTS = [
     t: 'Επισκευές τεντών',
     d: 'Βραχίονες, μηχανισμοί, μοτέρ και αυτοματισμοί. Σε τέντα δική μας ή οποιουδήποτε άλλου — δεν ρωτάμε ποιος την έβαλε.',
     img: 'assets/img/p-episkeui',
-    alt: 'Λεπτομέρεια μηχανισμού και βραχίονα τέντας κατά την επισκευή.'
+    alt: 'Τέντα με ξεθωριασμένο, λεκιασμένο πανί και τον αρθρωτό βραχίονα της, πριν την επισκευή.'
   },
   {
     t: 'Αλλαγή τεντόπανου',
@@ -362,7 +367,7 @@ const PRODUCTS = [
     t: 'Ειδικές κατασκευές',
     d: 'Ό,τι δεν βρίσκεται έτοιμο: καμπύλο μπαλκόνι, δύσκολος τοίχος, γωνία, φωταγωγός, βιτρίνα με σχήμα. Το μετράμε και το φτιάχνουμε στο εργαστήριο.',
     img: 'assets/img/p-eidikes',
-    alt: 'Τέντα κομμένη στην καμπύλη ενός στρογγυλού μπαλκονιού με σιδερένιο κάγκελο.'
+    alt: 'Τέντα κομμένη στην καμπύλη στρογγυλού μπαλκονιού, πάνω από μεταλλικό κάγκελο.'
   }
 ];
 
@@ -495,34 +500,6 @@ const PRODUCTS = [
 }
 
 /* ==========================================================================
-   ΥΦΑΣΜΑΤΑ — indicative colour families, drawn in CSS (clearly illustrative)
-   ========================================================================== */
-{
-  const host = $('#swatches');
-  if (host) {
-    const stripe = (a, b) => `repeating-linear-gradient(90deg, ${a} 0 14px, ${b} 14px 28px)`;
-    const SW = [
-      { n: 'Κρεμ',         bg: 'linear-gradient(160deg,#F1E8D6,#DDD0B4)' },
-      { n: 'Άμμος ριγέ',   bg: stripe('#E8DCC4', '#CDBB99') },
-      { n: 'Μπορντό',      bg: 'linear-gradient(160deg,#862729,#5A1119)' },
-      { n: 'Μπορντό ριγέ', bg: stripe('#641719', '#E8DCC4') },
-      { n: 'Ώχρα',         bg: 'linear-gradient(160deg,#D9A94C,#B07E22)' },
-      { n: 'Κυπαρίσσι',    bg: 'linear-gradient(160deg,#57694A,#3C4B33)' },
-      { n: 'Πράσινο ριγέ', bg: stripe('#4A5D3F', '#E4DAC4') },
-      { n: 'Ανθρακί',      bg: 'linear-gradient(160deg,#4E4A45,#312D29)' }
-    ];
-    host.innerHTML = SW.map((s, i) => `
-      <button type="button" class="swatch${i === 0 ? ' is-active' : ''}" style="background:${s.bg}"
-              aria-label="Απόχρωση ${s.n}"><span class="swatch__label">${s.n}</span></button>`).join('');
-    host.addEventListener('click', e => {
-      const b = e.target.closest('.swatch');
-      if (!b) return;
-      $$('.swatch', host).forEach(x => x.classList.toggle('is-active', x === b));
-    });
-  }
-}
-
-/* ==========================================================================
    ΕΡΓΑ — the workshop's own reel, and a gallery of finished jobs
    ========================================================================== */
 const GALLERY = [
@@ -532,8 +509,7 @@ const GALLERY = [
   ['assets/img/g04', 'Πέργκολα αλουμινίου με κάθετο πανί, δίπλα σε πισίνα'],
   ['assets/img/g05', 'Ιστίο σκίασης πάνω από πισίνα'],
   ['assets/img/g06', 'Πολυκατοικία — τέντες σε κάθε επίπεδο'],
-  ['assets/img/g07', 'Ανεμοφράκτες και κάθετα κρύσταλλα σε βεράντα'],
-  ['assets/img/g08', 'Εμπριμέ τεντόπανο — λεπτομέρεια']
+  ['assets/img/g07', 'Ανεμοφράκτες και κάθετα κρύσταλλα σε βεράντα']
 ];
 
 {
@@ -592,145 +568,382 @@ const GALLERY = [
 }
 
 /* ==========================================================================
-   ΠΕΡΙΟΧΕΣ — the route, walked in order
-   Not a map and not a graph: a single trip. It starts at the workshop and
-   goes to the next neighbourhood, and the next, in order of how far the van
-   has to travel — so the diagram says the same thing the copy does, that the
-   near ones get seen fastest. The line runs to the edge of the screen, drops
-   a row, and comes back the other way.
-
-   The chips in the HTML are the source of truth: their ORDER is the route,
-   and they are what a screen reader and a JS-less browser get.
+   THE CALL PICKER
+   The header used to hard-code one number. There are three ways to reach the
+   workshop and the visitor is the one who knows which suits them, so the header
+   asks instead of deciding. Without JS the trigger stays what it is in the
+   markup — a plain tel: link to the workshop line — so the header never becomes
+   a dead button.
    ========================================================================== */
 {
-  const host = $('#areamap');
-  const list = $('#areasList');
-  if (host && list) {
-    const chips = $$('.areas__chip', list);
+  const root  = $('#callpick');
+  const link  = $('#callTrigger');
+  const panel = $('#callPanel');
+
+  if (root && link && panel) {
+    /* A link that opens a menu lies to a screen reader, so swap in a real
+       button now that we know scripting is alive. */
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = link.className;
+    btn.id = 'callTrigger';
+    btn.innerHTML = link.innerHTML;
+    btn.setAttribute('aria-expanded', 'false');
+    btn.setAttribute('aria-haspopup', 'true');
+    btn.setAttribute('aria-controls', 'callPanel');
+    link.replaceWith(btn);
+
+    /* `hidden` is the no-JS state. From here the class drives it, so the panel
+       can animate — but it stays inert while closed, out of the tab order. */
+    panel.hidden = false;
+    panel.inert = true;
+
+    const rows = $$('.callpick__row', panel);
+    let open = false;
+
+    const set = (next, { restoreFocus = false } = {}) => {
+      open = next;
+      root.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', String(open));
+      panel.inert = !open;
+      if (!open && restoreFocus) btn.focus();
+    };
+
+    btn.addEventListener('click', e => { e.preventDefault(); set(!open); });
+    btn.addEventListener('keydown', e => {
+      if (e.key === 'ArrowDown') { e.preventDefault(); set(true); rows[0]?.focus(); }
+    });
+
+    // picking a line closes the panel behind it
+    rows.forEach(r => r.addEventListener('click', () => set(false)));
+
+    panel.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { set(false, { restoreFocus: true }); return; }
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      e.preventDefault();
+      const i = rows.indexOf(document.activeElement);
+      const step = e.key === 'ArrowDown' ? 1 : -1;
+      rows[(i + step + rows.length) % rows.length].focus();
+    });
+
+    addEventListener('keydown', e => e.key === 'Escape' && open && set(false, { restoreFocus: true }));
+    addEventListener('pointerdown', e => { if (open && !root.contains(e.target)) set(false); });
+    // the header shrinks and re-lays out on scroll; a panel left hanging off it looks broken
+    addEventListener('scroll', () => open && set(false), { passive: true });
+  }
+}
+
+/* ==========================================================================
+   ΚΑΛΥΨΗ — the country, as a dot matrix
+   The old diagram walked a van between nine Attica suburbs, which said the
+   opposite of the truth: the workshop builds in Zografou and installs
+   anywhere in Greece. This is the whole country, rasterised from its own
+   coastline onto a 46x46 grid — mainland, Peloponnese, Euboea, Crete and the
+   Aegean and Ionian islands — with the workshop as the one red mark.
+
+   The dots are grouped into rings by distance from the workshop and each ring
+   is ONE <path>, so the whole map is a handful of nodes rather than six
+   hundred, and the rings can light up outward from Zografou on a stagger.
+   It is decoration: the list of regions underneath is the real content.
+   ========================================================================== */
+const GREECE_MASK = [
+  '..............................................',
+  '...................................#..........',
+  '........................####......###.........',
+  '..................##################..........',
+  '...............#####################..........',
+  '.............#######################..........',
+  '......######################...######.........',
+  '......#################.####..................',
+  '.....#################.........#..............',
+  '....#############...####.......#..............',
+  '....#############...#####.....................',
+  '....#############...#.#.......................',
+  '....#############............##...............',
+  '..################...........##...............',
+  '..#################...........................',
+  '..##..#############...............#...........',
+  '.......#############.............###..........',
+  '.......###########..####.........###..........',
+  '.......############.##....#.......###.........',
+  '.......################...#...................',
+  '......###################.....................',
+  '.........#################.......##...........',
+  '......##.#############..###......##...........',
+  '......##..####...######...#......#............',
+  '......##..##############......................',
+  '.......#..#########.####...##........##.......',
+  '.......#.##########.####.#.###.......##.......',
+  '..........##########.....#..##...##...........',
+  '...........##########.......#.#.....#.........',
+  '...........########.................#.........',
+  '............#######..........###......#.......',
+  '............##.####...........##......##......',
+  '............##.####......#...##.##.....#......',
+  '................#.#......#....................',
+  '..................#...........#...............',
+  '..................#...........#............##.',
+  '..................#........................##.',
+  '..............................................',
+  '..............................................',
+  '.......................................#......',
+  '.....................#####.............#......',
+  '.....................#############............',
+  '.....................##############...........',
+  '.........................##########...........',
+  '..............................................',
+  '..............................................',
+];
+const GREECE_HUB = { x: 22.5, y: 24.9 };      // Μαικήνα 82, on the same grid
+
+/* Where the vans go. Nine headings, spread right around the compass so the fan
+   reads as "everywhere" rather than "these nine towns" — they are deliberately
+   unlabelled. Grid coordinates, projected the same way the mask was. */
+const GREECE_ROUTES = [
+  [18.4,  8.0],   // Θεσσαλονίκη
+  [32.9,  6.7],   // Θράκη
+  [36.3, 17.8],   // Βόρειο Αιγαίο
+  [8.0,  14.1],   // Ήπειρος
+  [3.3,  14.5],   // Κέρκυρα
+  [12.3, 23.2],   // Πάτρα
+  [14.2, 30.8],   // Μεσσηνία
+  [29.3, 41.6],   // Κρήτη
+  [43.8, 36.0],   // Ρόδος
+];
+
+/* Centre and radius per region, in grid units. A disc is a coarse fit for a
+   prefecture, but it is honest about what it is: this lights "roughly here",
+   not a boundary, and overlapping neighbours on the mainland is geographically
+   true anyway. */
+const GREECE_REGIONS = {
+  attiki:       [22.4, 24.4, 3.5],
+  thessaloniki: [18.4,  8.2, 3.5],
+  kmakedonia:   [18.1,  7.0, 7.0],
+  dmakedonia:   [10.4,  9.8, 5.0],
+  thraki:       [30.6,  5.1, 7.0],
+  thessalia:    [15.4, 15.2, 5.5],
+  ipeiros:      [ 7.5, 14.6, 5.5],
+  sterea:       [15.9, 21.0, 6.0],
+  peloponnisos: [14.7, 28.6, 7.0],
+  evvoia:       [22.1, 21.0, 5.5],
+  kriti:        [28.1, 42.2, 8.0],
+  kyklades:     [29.6, 30.8, 6.5],
+  dodekanisa:   [40.1, 34.2, 7.0],
+  ionia:        [ 5.7, 22.2, 6.0],
+  vaigaio:      [35.1, 19.0, 6.0],
+};
+
+{
+  const host = $('#reachMap');
+  if (host) {
     const NS = 'http://www.w3.org/2000/svg';
-    const el = (tag, attrs = {}) => {
-      const n = document.createElementNS(NS, tag);
-      for (const k in attrs) n.setAttribute(k, attrs[k]);
-      return n;
-    };
-    // how many stops fit across before the walk has to drop a row
-    const columns = () => matchMedia('(max-width: 560px)').matches ? 2
-                        : matchMedia('(max-width: 900px)').matches ? 3 : 4;
+    const N = GREECE_MASK.length;
+    const R = 0.3;                                        // dot radius, grid units
+    const RINGS = 7;
 
-    let cols = 0;
-    const draw = () => {
-      cols = columns();
-      const rows = Math.ceil(chips.length / cols);
-      const padX = cols === 2 ? 20 : 10;
-      /* Fewer columns means more rows AND bigger type, so the rows have to open
-         up or the names collide with the row beneath. Vertical space is the one
-         thing a phone has plenty of. */
-      const rowGap = cols === 2 ? 21 : cols === 3 ? 17 : 13.5;
-      const top = 7;
-      const colX = c => cols === 1 ? 50 : padX + ((100 - padX * 2) / (cols - 1)) * c;
-
-      /* Boustrophedon: row 0 runs left to right, row 1 comes back right to
-         left, so consecutive stops are always neighbours and the turn at the
-         end of a row is a straight drop. */
-      const stops = chips.map((c, i) => {
-        const row = Math.floor(i / cols);
-        const inRow = i % cols;
-        const col = row % 2 ? cols - 1 - inRow : inRow;
-        return {
-          name: c.dataset.label || c.textContent.trim(), hub: 'hub' in c.dataset,
-          x: colX(col), y: top + row * rowGap, row
-        };
-      });
-
-      host.textContent = '';
-      /* headroom at the top: the first row's turn stop wears its name ABOVE the
-         dot, and with the box starting at 0 that name was sliced in half */
-      const head = 6;
-      const height = top + (rows - 1) * rowGap + 11 + head;
-      /* Safari will not reliably derive an inline SVG's height from its viewBox
-         when height is auto — it sized this one far larger than its box on
-         iOS. Stating the width and the ratio outright leaves nothing to infer. */
-      const svg = el('svg', {
-        viewBox: `-4 ${-head} 108 ${height}`, class: 'areamap__svg',
-        width: '100%', 'aria-hidden': 'true', focusable: 'false',
-        preserveAspectRatio: 'xMidYMid meet'
-      });
-      svg.style.aspectRatio = `108 / ${height}`;
-
-      /* one shoe print — sole and heel — reused for every step.
-         The toe points along local -y, so a step rotates by its heading + 90°. */
-      const defs = el('defs');
-      const foot = el('g', { id: 'kfoot' });
-      foot.append(el('ellipse', { cx: 0, cy: -.18, rx: .5, ry: .8 }));
-      foot.append(el('ellipse', { cx: 0, cy: 1.16, rx: .36, ry: .48 }));
-      defs.append(foot);
-      svg.append(defs);
-
-      const guides = el('g', { class: 'areamap__trails' });
-      const steps  = el('g', { class: 'areamap__steps' });
-      const pins   = el('g', { class: 'areamap__pins' });
-      svg.append(guides, steps, pins);
-      host.append(svg);                        // must be live to measure the paths
-
-      /* A stop that hands the walk down to the next row wears its name above,
-         and the one that receives it wears its name below — either way the
-         drop never runs through the lettering. */
-      stops.forEach((s, i) => {
-        const next = stops[i + 1], prev = stops[i - 1];
-        const dropsDown = next && next.row !== s.row;
-        const cameDown  = prev && prev.row !== s.row;
-        const above = dropsDown && !cameDown;
-        const g = el('g', { class: 'areamap__pin' + (s.hub ? ' is-hub' : '') });
-        g.append(el('circle', { cx: s.x, cy: s.y, r: s.hub ? 2.2 : 1.35 }));
-        if (s.hub) g.append(el('circle', { class: 'areamap__halo', cx: s.x, cy: s.y, r: 4.2 }));
-        const label = el('text', {
-          class: 'areamap__label', x: s.x, y: s.y + (above ? -3.6 : 5.4), 'text-anchor': 'middle'
-        });
-        label.textContent = s.name;
-        g.append(label);
-        pins.append(g);
-      });
-
-      /* One continuous walk, numbered straight through: the prints land in
-         the order they are taken, from the workshop to the last stop. */
-      const CLEAR = 4.6, GAP = 3.1;
-      let step = 0;
-      for (let i = 0; i < stops.length - 1; i++) {
-        const a = stops[i], b = stops[i + 1];
-        const path = el('path', { d: `M${a.x} ${a.y} L${b.x} ${b.y}` });
-        guides.append(path);
-        const total = path.getTotalLength();
-        for (let d = CLEAR; d < total - CLEAR; d += GAP, step++) {
-          const p = path.getPointAtLength(d);
-          const q = path.getPointAtLength(Math.min(d + 1, total));
-          const ang = Math.atan2(q.y - p.y, q.x - p.x);
-          const side = (step % 2 ? 1 : -1) * .9;      // left foot, right foot
-          const mark = el('use', {
-            class: 'areamap__step', href: '#kfoot',
-            transform: `translate(${(p.x + Math.cos(ang + Math.PI / 2) * side).toFixed(2)} `
-                     + `${(p.y + Math.sin(ang + Math.PI / 2) * side).toFixed(2)}) `
-                     + `rotate(${(ang * 180 / Math.PI + 90).toFixed(1)})`
-          });
-          mark.style.setProperty('--d', (step * 42) + 'ms');
-          steps.append(mark);
-        }
+    const dots = [];
+    let far = 0;
+    GREECE_MASK.forEach((row, y) => {
+      for (let x = 0; x < row.length; x++) {
+        if (row[x] !== '#') continue;
+        const d = Math.hypot(x - GREECE_HUB.x, y - GREECE_HUB.y);
+        far = Math.max(far, d);
+        dots.push({ x, y, d });
       }
-      // the loop has to outlast the whole walk, or the front of it laps the tail
-      host.style.setProperty('--walk', (step * 42 + 2600) + 'ms');
+    });
+
+    // one circle, written as a path so a whole ring is a single element
+    const disc = (x, y) => `M${x - R} ${y}a${R} ${R} 0 1 0 ${R * 2} 0a${R} ${R} 0 1 0 ${-R * 2} 0`;
+
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', `-1.2 -1.2 ${N + 2.4} ${N + 2.4}`);
+    svg.setAttribute('class', 'reach__svg');
+    svg.setAttribute('width', '100%');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    svg.style.aspectRatio = '1 / 1';
+
+    for (let r = 0; r < RINGS; r++) {
+      const band = dots.filter(p => Math.floor(p.d / far * RINGS * 0.999) === r);
+      if (!band.length) continue;
+      const path = document.createElementNS(NS, 'path');
+      path.setAttribute('class', 'reach__dots');
+      path.setAttribute('d', band.map(p => disc(p.x, p.y)).join(''));
+      path.style.setProperty('--d', (r * 110) + 'ms');
+      svg.append(path);
+    }
+
+    /* Quadratic arcs, all bowed to the same side so the fan reads as one
+       system instead of nine unrelated lines. The head is drawn by hand rather
+       than with a <marker>: a marker is painted at its vertex regardless of the
+       dash offset, so it would sit at the destination before its own line had
+       been drawn. Tangent at t=1 on a quadratic is simply (end - control). */
+    const routes = document.createElementNS(NS, 'g');
+    routes.setAttribute('class', 'reach__routes');
+    GREECE_ROUTES.forEach(([bx, by], i) => {
+      const ax = GREECE_HUB.x, ay = GREECE_HUB.y;
+      let dx = bx - ax, dy = by - ay;
+      const len = Math.hypot(dx, dy) || 1;
+      // leave the hub from its edge, not from under the red dot
+      const sx = ax + dx / len * 2.1, sy = ay + dy / len * 2.1;
+      // and stop just short, so the head lands beside the town and not on it
+      const ex = bx - dx / len * 0.9, ey = by - dy / len * 0.9;
+
+      dx = ex - sx; dy = ey - sy;
+      const cx = (sx + ex) / 2 - dy * 0.19;
+      const cy = (sy + ey) / 2 + dx * 0.19;
+
+      const g = document.createElementNS(NS, 'g');
+      g.style.setProperty('--d', (700 + i * 130) + 'ms');
+
+      const line = document.createElementNS(NS, 'path');
+      line.setAttribute('class', 'reach__route');
+      line.setAttribute('pathLength', '1');        // so the dash can be authored in CSS
+      line.setAttribute('d', `M${sx.toFixed(2)} ${sy.toFixed(2)} Q${cx.toFixed(2)} ${cy.toFixed(2)} ${ex.toFixed(2)} ${ey.toFixed(2)}`);
+
+      const ang = Math.atan2(ey - cy, ex - cx) * 180 / Math.PI;
+      const head = document.createElementNS(NS, 'path');
+      head.setAttribute('class', 'reach__head');
+      head.setAttribute('d', 'M0 0 L-1.15 .62 L-.78 0 L-1.15 -.62 Z');
+      head.setAttribute('transform', `translate(${ex.toFixed(2)} ${ey.toFixed(2)}) rotate(${ang.toFixed(1)})`);
+
+      g.append(line, head);
+      routes.append(g);
+    });
+    svg.append(routes);
+
+    /* One extra path, re-authored on each pick, painted over the base rings.
+       Highlighting a subset of a ring is impossible (a ring IS one path), and
+       576 individually addressable dots would be 576 nodes. */
+    const lit = document.createElementNS(NS, 'path');
+    lit.setAttribute('class', 'reach__lit');
+    svg.insertBefore(lit, routes);
+
+    const LIT_R = 0.46;                        // a touch fatter, so it reads as lit
+    const litDisc = (x, y) =>
+      `M${x - LIT_R} ${y}a${LIT_R} ${LIT_R} 0 1 0 ${LIT_R * 2} 0a${LIT_R} ${LIT_R} 0 1 0 ${-LIT_R * 2} 0`;
+
+    const buttons = $$('.reach__region');
+    const clear = () => {
+      lit.removeAttribute('d');
+      host.classList.remove('has-pick');
+      buttons.forEach(b => b.setAttribute('aria-pressed', 'false'));
     };
 
-    draw();
-    list.classList.add('is-mapped');            // stays for AT, leaves the layout
+    buttons.forEach(btn => btn.addEventListener('click', () => {
+      const key = btn.dataset.region;
+      const spec = GREECE_REGIONS[key];
+      if (!spec) return;
+      if (btn.getAttribute('aria-pressed') === 'true') { clear(); return; }
 
-    /* redraw only when the number of stops per row actually changes */
-    addEventListener('resize', () => { if (columns() !== cols) draw(); });
+      const [cx, cy, r] = spec;
+      const inside = dots.filter(p => Math.hypot(p.x - cx, p.y - cy) <= r);
+      if (!inside.length) return;
 
-    /* The walk runs on a loop — someone is always on their way out to a job.
-       It only ticks while the diagram is on screen, same as the video loops:
-       an animation nobody is looking at is just spent battery. */
-    new IntersectionObserver(([en]) => {
-      host.classList.toggle('is-walking', en.isIntersecting && motionOK());
-    }, { threshold: .08 }).observe(host);
+      clear();
+      lit.setAttribute('d', inside.map(p => litDisc(p.x, p.y)).join(''));
+      host.classList.add('has-pick');
+      btn.setAttribute('aria-pressed', 'true');
+    }));
+
+    const hub = document.createElementNS(NS, 'g');
+    hub.setAttribute('class', 'reach__hub');
+    const halo = document.createElementNS(NS, 'circle');
+    halo.setAttribute('class', 'reach__halo');
+    halo.setAttribute('cx', GREECE_HUB.x); halo.setAttribute('cy', GREECE_HUB.y);
+    halo.setAttribute('r', 2.6);
+    const pin = document.createElementNS(NS, 'circle');
+    pin.setAttribute('cx', GREECE_HUB.x); pin.setAttribute('cy', GREECE_HUB.y);
+    pin.setAttribute('r', 1.15);
+    hub.append(halo, pin);
+    svg.append(hub);
+    host.append(svg);
+
+    /* The rings light up outward the first time the map is reached, then the
+       observer lets go: re-running the stagger every time it scrolls back past
+       would restart the country from nothing mid-read. */
+    const light = () => { host.classList.add('is-live'); io.disconnect(); };
+    const io = new IntersectionObserver(([en]) => en.isIntersecting && light(),
+                                        { threshold: .12 });
+    io.observe(host);
+    // already in frame on arrival (restored scroll, deep link) — see note above
+    if (host.getBoundingClientRect().top < innerHeight) light();
+  }
+}
+
+/* ==========================================================================
+   ΤΟ ΠΑΝΙ — the workshop's own sample book
+   Every one of these is a photograph of a page in the book that sits on the
+   bench, cropped to the swatch and carrying the manufacturer's real design
+   code — so a visitor can ring up and say "the 8054" and be understood.
+   ========================================================================== */
+const FABRICS = [
+  ['2307', 'Τουλίπα',        'Κρεμ βάση με αραιή τουλίπα — διακριτικό μοτίβο που δεν κουράζει σε μεγάλο άνοιγμα.'],
+  ['8060', 'Ελιά',           'Κλαδιά ελιάς σε λαδί πράσινο. Κάνει τη σκιά να δένει με κήπο ή βεράντα με φυτά.'],
+  ['8028', 'Φύλλα',          'Φθινοπωρινά φύλλα σε χαμηλότονο μπεζ. Ζεστό χωρίς να σκουραίνει το μπαλκόνι.'],
+  ['8038', 'Καμέλια',       'Έντονα φούξια άνθη σε ανοιχτό φόντο — το πιο δυνατό σχέδιο της σειράς.'],
+  ['8048', 'Μαργαρίτα',     'Μεγάλη ροζ μαργαρίτα με γαλάζιες λεπτομέρειες. Πολύ καλό σε μικρά μπαλκόνια.'],
+  ['8059', 'Γραμμή',         'Λεπτό σχέδιο σε γραμμή, σχεδόν μονόχρωμο. Για όποιον δεν θέλει λουλούδια.'],
+  ['2271', 'Ουρανός',        'Γαλάζιος ουρανός με σύννεφα. Φωτίζει τον χώρο από κάτω αντί να τον σκοτεινιάζει.'],
+  ['3208', 'Μπουκέτο',       'Πλούσια ανθοδέσμη σε ωχρα και ροζ. Κλασικό σχέδιο πολυκατοικίας.'],
+  ['8054', 'Πέταλα',         'Γκρι πέταλα σε τόνους του ίδιου χρώματος — μοντέρνο, ουδέτερο, ταιριάζει παντού.'],
+  ['8023', 'Βεντάλια',       'Αμμόχρωμη βάση με αμυδρό γκρι μοτίβο. Το πιο διακριτικό απ’ όλα.'],
+  ['8029', 'Κρίνος',         'Λευκός κρίνος με πράσινες σκιές. Καθαρό και φωτεινό.'],
+  ['8047', 'Μανόλια',       'Κλαδί μανόλιας σε απαλό ροζ. Ζεστό φως μέσα στο σπίτι το απόγευμα.'],
+  ['8049', 'Τριαντάφυλλο',  'Λευκά και ροζ τριαντάφυλλα σε μεγέθυνση. Για μεγάλες επιφάνειες.'],
+  ['8056', 'Φοίνικας',       'Γκρι φύλλα φοίνικα — το πιο καλοκαιρινό σχέδιο, χωρίς χρώμα.'],
+  ['8058', 'Ορχιδέα',        'Μοβ ορχιδέα σε λεπτή γραμμή. Διακριτικό χρώμα, καθαρό σχέδιο.'],
+];
+
+{
+  const grid = $('#paniaGrid');
+  const shot = $('#paniaShot');
+  if (grid && shot) {
+    const code = $('#paniaCode'), name = $('#paniaName'), desc = $('#paniaDesc');
+    const cta  = $('#paniaCta');
+
+    grid.innerHTML = FABRICS.map(([c, nm, d], i) => `
+      <label class="pania__opt${i === 0 ? ' is-on' : ''}">
+        <input type="radio" name="fabric" value="${c}"${i === 0 ? ' checked' : ''}
+               data-name="${nm}" data-desc="${d}">
+        <img src="assets/img/f-${c}-200.webp" alt="Ύφασμα τέντας Design ${c} — ${nm}"
+             width="200" height="200" loading="lazy" decoding="async">
+        <span class="pania__tag"><b>${nm}</b><i>${c}</i></span>
+      </label>`).join('');
+
+    /* Preload the big shot before swapping it in: pointing <img src> straight at
+       a file that is not in cache blanks the panel for a beat on every click. */
+    const pick = input => {
+      const c = input.value, nm = input.dataset.name;
+      const big = new Image();
+      big.onload = () => { shot.src = big.src; shot.alt = `Ύφασμα τέντας, κωδικός Design ${c} — «${nm}»`; };
+      big.src = `assets/img/f-${c}-700.webp`;
+      if (code) code.textContent = 'Design ' + c;
+      if (name) name.textContent = nm;
+      if (desc) desc.textContent = input.dataset.desc;
+      $$('.pania__opt', grid).forEach(l => l.classList.toggle('is-on', l.contains(input)));
+      chosenFabric = `Design ${c} — ${nm}`;
+      if (cta) cta.dataset.fabric = chosenFabric;
+    };
+
+    grid.addEventListener('change', e => {
+      const input = e.target.closest('input[name="fabric"]');
+      if (input) pick(input);
+    });
+
+    const first = $('input[name="fabric"]', grid);
+    if (first) pick(first);
+
+    /* The CTA is a real anchor to the form, so it works without any of this;
+       the handler only adds the confirmation line once the jump has landed. */
+    cta?.addEventListener('click', () => {
+      const note = $('#wizardFabric');
+      if (note && chosenFabric) {
+        note.textContent = `Ύφασμα που διάλεξες: ${chosenFabric}`;
+        note.hidden = false;
+      }
+    });
   }
 }
 
@@ -747,7 +960,7 @@ const FAQ = [
   ['Χρειάζεται άδεια για τέντα σε πολυκατοικία;',
    'Για μπαλκόνι σε πολυκατοικία συνήθως παίζει ρόλο ο κανονισμός της πολυκατοικίας ως προς το χρώμα και τον τύπο, ώστε η όψη να μείνει ενιαία. Για κατάστημα που βγαίνει πάνω από πεζοδρόμιο ή κοινόχρηστο χώρο εμπλέκεται και ο δήμος. Θα σου πούμε τι ισχύει στη δική σου περίπτωση όταν δούμε τον χώρο.'],
   ['Ποιες περιοχές καλύπτετε;',
-   'Έδρα μας είναι η Ζωγράφου, Μαικήνα 82. Εξυπηρετούμε Ζωγράφου, Ιλίσια, Γουδή, Καισαριανή, Βύρωνα, Παγκράτι, Αμπελόκηπους, Χολαργό, Παπάγου και ευρύτερα την Αττική.'],
+   'Όλη την Ελλάδα. Το εργαστήριο είναι στη Ζωγράφου, Μαικήνα 82, και από εκεί βγαίνει κάθε κατασκευή. Εξυπηρετούμε όλη την Αττική, την ηπειρωτική Ελλάδα και τα νησιά — Κρήτη, Κυκλάδες, Δωδεκάνησα, Ιόνιο, Βόρειο Αιγαίο. Για δουλειά εκτός Αττικής συνεννοούμαστε από το τηλέφωνο και οργανώνουμε μέτρηση και τοποθέτηση μαζί.'],
   ['Αντέχει η τέντα στον αέρα;',
    'Καμία ανοιχτή τέντα δεν είναι φτιαγμένη να μένει ανοιχτή σε δυνατό αέρα — ούτε η ακριβότερη. Αυτό που κάνει πραγματικά τη διαφορά στη διάρκεια ζωής της είναι η σωστή στήριξη στον φέροντα τοίχο και ένας αισθητήρας ανέμου που τη μαζεύει μόνος του όταν δεν είσαι σπίτι.'],
   ['Πόσο χρόνο θέλει η κατασκευή και η τοποθέτηση;',
@@ -874,6 +1087,7 @@ const FAQ = [
         `Χώρος:      ${d.get('place') || '—'}`,
         `Πλάτος:     ${fmt(d.get('width'))}`,
         `Προεξοχή:   ${fmt(d.get('projection'))}`,
+        `Ύφασμα:    ${chosenFabric || '— (δεν επιλέχθηκε)'}`,
         '',
         `Όνομα:      ${name}`,
         `Τηλέφωνο:   ${phone}`,
@@ -918,7 +1132,27 @@ const FAQ = [
       + '<strong>Μαικήνα 82</strong><span>Ζωγράφου 15771</span><span>Άνοιξε στους χάρτες →</span></a>';
   };
 
-  if (el && window.L) {
+  /* 161 KB of vendor for one map in the final section. Nobody pays for it
+     until they get there, and if the fetch fails the address panel below takes
+     over exactly as it does when Leaflet is blocked outright. */
+  const loadLeaflet = () => new Promise((resolve, reject) => {
+    if (window.L) { resolve(); return; }
+    /* MUST land ahead of style.css: the site restyles Leaflet's popup, zoom
+       control and container, and a stylesheet appended to the end of <head>
+       would outrank those rules and hand back the default grey chrome. */
+    const css = document.createElement('link');
+    css.rel = 'stylesheet';
+    css.href = 'assets/vendor/leaflet.css';
+    document.head.insertBefore(css, $('link[href="css/style.css"]'));
+
+    const js = document.createElement('script');
+    js.src = 'assets/vendor/leaflet.js';
+    js.onload = resolve;
+    js.onerror = reject;
+    document.head.append(js);
+  });
+
+  if (el) {
     const boot = () => {
       const map = L.map(el, {
         center: [LAT, LNG], zoom: 16, scrollWheelZoom: false,
@@ -953,14 +1187,22 @@ const FAQ = [
       el.addEventListener('click', () => map.scrollWheelZoom.enable(), { once: true });
     };
     // Leaflet needs the container laid out before it measures tiles — wait
-    // until the map is actually on screen, same gate as the ambient loops.
-    new IntersectionObserver(([en], obs) => {
-      if (!en.isIntersecting) return;
-      obs.disconnect();
-      try { boot(); } catch { fallback(); }
-    }).observe(el);
-  } else {
-    fallback();                                // Leaflet blocked or never arrived
+    // until the map is nearly on screen, same gate as the ambient loops. The
+    // margin buys the fetch a head start so the panel is rarely seen empty.
+    let started = false;
+    const start = () => {
+      if (started) return;
+      started = true;
+      io.disconnect();
+      loadLeaflet()
+        .then(() => { try { boot(); } catch { fallback(); } })
+        .catch(fallback);                      // blocked, offline, or 404
+    };
+    const io = new IntersectionObserver(([en]) => en.isIntersecting && start(),
+                                        { rootMargin: '400px' });
+    io.observe(el);
+    // already in frame on arrival — otherwise this one leaves a dead grey box
+    if (el.getBoundingClientRect().top < innerHeight + 400) start();
   }
 }
 
