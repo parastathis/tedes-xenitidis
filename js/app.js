@@ -824,26 +824,30 @@ const GREECE_REGIONS = {
     const litDisc = (x, y) =>
       `M${x - LIT_R} ${y}a${LIT_R} ${LIT_R} 0 1 0 ${LIT_R * 2} 0a${LIT_R} ${LIT_R} 0 1 0 ${-LIT_R * 2} 0`;
 
-    const buttons = $$('.reach__region');
+    const buttons = $$('.reach__region, .reach__all');
     const clear = () => {
       lit.removeAttribute('d');
-      host.classList.remove('has-pick');
+      host.classList.remove('has-pick', 'has-all');
       buttons.forEach(b => b.setAttribute('aria-pressed', 'false'));
     };
 
     buttons.forEach(btn => btn.addEventListener('click', () => {
       const key = btn.dataset.region;
-      const spec = GREECE_REGIONS[key];
-      if (!spec) return;
       if (btn.getAttribute('aria-pressed') === 'true') { clear(); return; }
 
-      const [cx, cy, r] = spec;
-      const inside = dots.filter(p => Math.hypot(p.x - cx, p.y - cy) <= r);
+      // «Όλη η Ελλάδα» is the whole set, not a sixteenth region
+      const inside = key === 'all' ? dots : (() => {
+        const spec = GREECE_REGIONS[key];
+        if (!spec) return [];
+        const [cx, cy, r] = spec;
+        return dots.filter(p => Math.hypot(p.x - cx, p.y - cy) <= r);
+      })();
       if (!inside.length) return;
 
       clear();
       lit.setAttribute('d', inside.map(p => litDisc(p.x, p.y)).join(''));
       host.classList.add('has-pick');
+      if (key === 'all') host.classList.add('has-all');
       btn.setAttribute('aria-pressed', 'true');
     }));
 

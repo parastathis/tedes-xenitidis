@@ -530,26 +530,46 @@
       </figure>
     </div>
 
-    <!-- Pressing one lights that part of the map. Without JS they are plain
+    <!-- Pressing one lights that part of the map; «Όλη η Ελλάδα» lights all of
+         it. Grouped and counted rather than run out as fifteen equal chips:
+         the shape of the list is itself the claim. Without JS they are plain
          buttons that do nothing visible, and the list still reads as the list
-         of regions served — which is the content that matters here. -->
-    <ul class="reach__regions">
-      <li><button type="button" class="reach__region" data-region="attiki" aria-pressed="false">Αττική</button></li>
-      <li><button type="button" class="reach__region" data-region="thessaloniki" aria-pressed="false">Θεσσαλονίκη</button></li>
-      <li><button type="button" class="reach__region" data-region="kmakedonia" aria-pressed="false">Κεντρική Μακεδονία</button></li>
-      <li><button type="button" class="reach__region" data-region="dmakedonia" aria-pressed="false">Δυτική Μακεδονία</button></li>
-      <li><button type="button" class="reach__region" data-region="thraki" aria-pressed="false">Θράκη</button></li>
-      <li><button type="button" class="reach__region" data-region="thessalia" aria-pressed="false">Θεσσαλία</button></li>
-      <li><button type="button" class="reach__region" data-region="ipeiros" aria-pressed="false">Ήπειρος</button></li>
-      <li><button type="button" class="reach__region" data-region="sterea" aria-pressed="false">Στερεά Ελλάδα</button></li>
-      <li><button type="button" class="reach__region" data-region="peloponnisos" aria-pressed="false">Πελοπόννησος</button></li>
-      <li><button type="button" class="reach__region" data-region="evvoia" aria-pressed="false">Εύβοια</button></li>
-      <li><button type="button" class="reach__region" data-region="kriti" aria-pressed="false">Κρήτη</button></li>
-      <li><button type="button" class="reach__region" data-region="kyklades" aria-pressed="false">Κυκλάδες</button></li>
-      <li><button type="button" class="reach__region" data-region="dodekanisa" aria-pressed="false">Δωδεκάνησα</button></li>
-      <li><button type="button" class="reach__region" data-region="ionia" aria-pressed="false">Ιόνια Νησιά</button></li>
-      <li><button type="button" class="reach__region" data-region="vaigaio" aria-pressed="false">Βόρειο Αιγαίο</button></li>
-    </ul>
+         of regions served, which is the content that matters here. -->
+    <div class="reach__regions">
+      <button type="button" class="reach__all" data-region="all" aria-pressed="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18a14 14 0 0 1 0-18"/></svg>
+        Όλη η Ελλάδα
+      </button>
+
+      <div class="reach__rgrid">
+        <section class="reach__rgroup" aria-labelledby="rg-main">
+          <h3 class="reach__rlabel" id="rg-main">Ηπειρωτική <span>9</span></h3>
+          <ul>
+          <li><button type="button" class="reach__region" data-region="attiki" aria-pressed="false">Αττική</button></li>
+          <li><button type="button" class="reach__region" data-region="thessaloniki" aria-pressed="false">Θεσσαλονίκη</button></li>
+          <li><button type="button" class="reach__region" data-region="kmakedonia" aria-pressed="false">Κ. Μακεδονία</button></li>
+          <li><button type="button" class="reach__region" data-region="dmakedonia" aria-pressed="false">Δ. Μακεδονία</button></li>
+          <li><button type="button" class="reach__region" data-region="thraki" aria-pressed="false">Θράκη</button></li>
+          <li><button type="button" class="reach__region" data-region="thessalia" aria-pressed="false">Θεσσαλία</button></li>
+          <li><button type="button" class="reach__region" data-region="ipeiros" aria-pressed="false">Ήπειρος</button></li>
+          <li><button type="button" class="reach__region" data-region="sterea" aria-pressed="false">Στερεά Ελλάδα</button></li>
+          <li><button type="button" class="reach__region" data-region="peloponnisos" aria-pressed="false">Πελοπόννησος</button></li>
+          </ul>
+        </section>
+
+        <section class="reach__rgroup" aria-labelledby="rg-isl">
+          <h3 class="reach__rlabel" id="rg-isl">Νησιά <span>6</span></h3>
+          <ul>
+          <li><button type="button" class="reach__region" data-region="evvoia" aria-pressed="false">Εύβοια</button></li>
+          <li><button type="button" class="reach__region" data-region="kriti" aria-pressed="false">Κρήτη</button></li>
+          <li><button type="button" class="reach__region" data-region="kyklades" aria-pressed="false">Κυκλάδες</button></li>
+          <li><button type="button" class="reach__region" data-region="dodekanisa" aria-pressed="false">Δωδεκάνησα</button></li>
+          <li><button type="button" class="reach__region" data-region="ionia" aria-pressed="false">Ιόνια</button></li>
+          <li><button type="button" class="reach__region" data-region="vaigaio" aria-pressed="false">Β. Αιγαίο</button></li>
+          </ul>
+        </section>
+      </div>
+    </div>
   </div>
 </section>
 

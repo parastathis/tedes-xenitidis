@@ -1243,15 +1243,56 @@ legend { padding: 0; display: block; }
 .reach__key--hub { background: var(--red); opacity: 1; }
 
 .reach__regions {
-  list-style: none; display: flex; flex-wrap: wrap; gap: .6rem;
   margin: clamp(2rem, 4vw, 3rem) 0 0;
   padding-top: clamp(1.4rem, 3vw, 2rem);
   border-top: 1px solid rgba(250, 245, 233, .14);
 }
+/* Two labelled, counted sets instead of fifteen equal chips in one ragged
+   wrap. The grouping is the point: ηπειρωτική AND νησιά says
+   "everywhere" faster than counting the buttons does. */
+.reach__rgrid { display: grid; gap: clamp(1.5rem, 3vw, 2.5rem); }
+@media (min-width: 720px) { .reach__rgrid { grid-template-columns: 1.5fr 1fr; } }
+.reach__rgroup ul { list-style: none; display: flex; flex-wrap: wrap; gap: .5rem; margin: 0; padding: 0; }
+.reach__rlabel {
+  font-family: var(--body); font-size: .66rem; font-weight: 700;
+  letter-spacing: .2em; text-transform: uppercase; color: var(--bone-3);
+  margin: 0 0 .85rem; display: flex; align-items: center; gap: .55rem;
+}
+.reach__rlabel span {
+  font-variant-numeric: tabular-nums; color: var(--brass);
+  border: 1px solid var(--line-brass); border-radius: 999px;
+  padding: .1rem .45rem; font-size: .62rem; letter-spacing: .04em;
+}
+.reach__rlabel::after {
+  content: ""; flex: 1; height: 1px; background: rgba(250, 245, 233, .14);
+}
+
+/* the master: lights the whole country, and reads as the headline of the set */
+.reach__all {
+  display: inline-flex; align-items: center; gap: .6rem;
+  margin-bottom: clamp(1.25rem, 2.5vw, 1.75rem);
+  padding: .6rem 1.15rem;
+  background: transparent; color: var(--bone);
+  border: 2px solid var(--bone); border-radius: var(--edge-radius);
+  box-shadow: var(--edge-x) var(--edge-y) 0 0 var(--brass);
+  font-family: var(--body); font-size: var(--step--1); font-weight: 700;
+  letter-spacing: .08em; text-transform: uppercase; cursor: pointer;
+  transition: transform .18s var(--ease), box-shadow .18s var(--ease),
+              background .3s var(--ease), color .3s var(--ease);
+}
+.reach__all svg { width: 16px; height: 16px; color: var(--brass-lite); }
+.reach__all:hover, .reach__all:focus-visible {
+  transform: translate(var(--edge-x), var(--edge-y)); box-shadow: 0 0 0 0 var(--brass);
+}
+.reach__all[aria-pressed="true"] {
+  background: var(--wine); color: var(--marble);
+  transform: translate(var(--edge-x), var(--edge-y)); box-shadow: 0 0 0 0 var(--brass);
+}
+.reach__all[aria-pressed="true"] svg { color: var(--marble); }
 /* Same hard edge and offset shadow as every other button on the page — they
    are pressable, so they wear the page's button, not a soft pill. */
 .reach__region {
-  padding: .55rem 1.05rem;
+  padding: .5rem .95rem;
   background: transparent; color: var(--bone-2);
   border: 2px solid rgba(250, 245, 233, .3);
   border-radius: var(--edge-radius);
@@ -1269,6 +1310,12 @@ legend { padding: 0; display: block; }
 .reach__region[aria-pressed="true"] {
   background: var(--wine); color: var(--marble); border-color: var(--bone);
   transform: translate(3px, 3px); box-shadow: 0 0 0 0 var(--brass);
+}
+
+/* on a phone fifteen full-size chips is most of a screen — tighten them */
+@media (max-width: 560px) {
+  .reach__region { padding: .45rem .7rem; font-size: .78rem; letter-spacing: .02em; }
+  .reach__rgroup ul { gap: .4rem; }
 }
 
 /* the picked region, and the rest of the country knocked back behind it */
