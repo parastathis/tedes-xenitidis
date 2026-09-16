@@ -169,6 +169,17 @@ one tighter greek+latin subset from the upstream variable TTFs was tried and is
 upstream font carries far more variation data than Google's pipeline output.
 Use Google's files.
 
+**The fallback is metric-matched** (`Sofia XC fallback` in `style.css`). Nothing
+on a stock device is anywhere near as condensed as Sofia Sans Extra Condensed:
+the hero title set in Arial Narrow runs to five lines instead of three, 216 px
+instead of 129 px, so the instant the real font arrived everything below it
+jumped 87 px. `size-adjust` and the ascent/descent overrides are measured off
+the real font, one face per likely local fallback, narrowest declared last
+because CSS uses the last face in a family whose `src` resolves. All three
+measure 129 px — the same as the real font — so the swap moves nothing.
+Re-measure if the display face ever changes. Commissioner needs none of this;
+it is within 0.2 % of system-ui.
+
 **All four are preloaded, including latin.** That is not belt-and-braces. The
 hero title needs latin glyphs — the comma and the full stop in «ΤΟ ΜΠΑΛΚΟΝΙ ΣΟΥ,
 ΠΙΣΩ ΣΤΗ ΣΚΙΑ.», the digits in «210 775 1368», the «82» in the address — so left
