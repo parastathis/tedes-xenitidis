@@ -28,21 +28,23 @@ TYPES = {
     ".xml":  "application/xml; charset=utf-8",
     ".txt":  "text/plain; charset=utf-8",
     ".md":   "text/plain; charset=utf-8",
+    ".woff2": "font/woff2",
 }
 
 RANGE_RE = re.compile(r"bytes=(\d*)-(\d*)")
 
 # Sent on every response. A static host serves this site in production, so the
-# same list belongs in its config (nginx add_header / Netlify _headers / etc.);
-# index.html carries a <meta> copy of the CSP for hosts that send no headers at
-# all. frame-ancestors and X-Frame-Options can ONLY come from a real header,
-# which is why they live here and not in the markup.
+# same list belongs in its config - vercel.json holds the production copy and
+# must be kept in step with this one. index.html carries a <meta> copy of the
+# CSP for hosts that send no headers at all. frame-ancestors and
+# X-Frame-Options can ONLY come from a real header, which is why they live
+# here and not in the markup.
 SECURITY_HEADERS = [
     ("Content-Security-Policy",
      "default-src 'self'; base-uri 'self'; object-src 'none'; "
      "frame-ancestors 'none'; form-action 'self'; script-src 'self'; "
-     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-     "font-src 'self' https://fonts.gstatic.com; "
+     "style-src 'self' 'unsafe-inline'; "
+     "font-src 'self'; "
      "img-src 'self' data: https://tile.openstreetmap.org "
      "https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org "
      "https://c.tile.openstreetmap.org; "

@@ -1,7 +1,7 @@
 # ΚΕΝΤΑΥΡΟΣ — Τέντες Ξενιτίδης, Ζωγράφου
 
 Static site (plain HTML/CSS/JS, no build step, no dependencies).
-Preview: `preview_start` with launch config **`tentes`** → http://localhost:8909
+Preview: `preview_start` with launch config **`tedes-xenitidis`** → http://localhost:8909
 
 ```
 index.html          all markup + JSON-LD
@@ -9,8 +9,10 @@ css/style.css       design system + every component
 js/app.js           hero scrub, sun slider, fabric picker, call picker,
                     coverage map, wizard, FAQ
 assets/img/         shipped, optimised (webp + jpg fallback, responsive variants)
+assets/fonts/       self-hosted woff2 subsets — see «Webfonts»
 assets/video/       hero scrub + fabric loop (desktop-only, see below)
 assets/_source/     2K PNG masters — gitignored, NOT shipped
+vercel.json         production headers + cache policy (mirrors serve.py)
 ```
 
 ---
@@ -70,8 +72,22 @@ Business Profile suspended. None of the Kilkis page's 10 photos are used here.
    strip and the wizard, but not verified for this specific shop. Confirm.
 5. **Real project photos** — see below.
 6. **Domain**: `tentes-kentayros.gr` is referenced by epagelmatias.gr but is
-   **NXDOMAIN with zero Wayback snapshots** — it appears unregistered. All canonical
-   URLs, OG tags, sitemap and robots point there. Grab it, or global-replace.
+   **NXDOMAIN with zero Wayback snapshots** — it appears unregistered.
+
+   **Global-replaced, Sep 2026.** Every absolute URL now points at
+   `https://tedes-xenitidis-lbrh.vercel.app`, the address the site actually
+   answers on. It had to be: a canonical pointing at a host that does not
+   resolve tells Google the real copy of this page is somewhere it cannot
+   reach, so the live site was effectively unindexable, and every share preview
+   on Facebook, WhatsApp and Viber came up blank because `og:image` was on the
+   dead host too.
+
+   **To migrate when the domain is bought:** search `index.html`, `robots.txt`
+   and `sitemap.xml` for `tedes-xenitidis-lbrh.vercel.app` and replace it. That
+   is the whole job — 13 in `index.html`, one each in the other two, and no
+   other file mentions a host. Vercel
+   308-redirects the `.vercel.app` alias to a custom production domain once one
+   is attached, so the two addresses will not compete for indexing.
 
 ## Photography
 
@@ -136,6 +152,49 @@ Highlighting a subset of a ring is impossible (a ring **is** one path) and 576
 addressable dots would be 576 nodes, hence the overlay. The buttons wear the page's
 own hard-edge/offset-shadow treatment and press down onto their shadow, same as every
 other button on the site; `aria-pressed` carries the state and a second press clears.
+
+## Webfonts
+
+Both families are **self-hosted** from `assets/fonts/`, not pulled from
+`fonts.googleapis.com`. The Google stylesheet was the single worst thing on the
+page: a render-blocking request on a third origin, with the woff2 files queued
+*behind* it, so nothing painted until DNS + TLS + CSS + font had all come back —
+4.3 s of it on a throttled phone, and a 4.8 s LCP render delay.
+
+Four files, the unmodified greek and latin subsets Google serves (OFL 1.1, see
+`assets/fonts/OFL.txt`). They are variable, so one file per script covers
+Commissioner 400–700 and Sofia Sans Extra Condensed 800–900. Rebuilding them as
+one tighter greek+latin subset from the upstream variable TTFs was tried and is
+*worse* — 69 KB against Google's 52 KB for the same 212 glyphs, because the
+upstream font carries far more variation data than Google's pipeline output.
+Use Google's files.
+
+**All four are preloaded, including latin.** That is not belt-and-braces. The
+hero title needs latin glyphs — the comma and the full stop in «ΤΟ ΜΠΑΛΚΟΝΙ ΣΟΥ,
+ΠΙΣΩ ΣΤΗ ΣΚΙΑ.», the digits in «210 775 1368», the «82» in the address — so left
+to discovery the latin files only went on the wire after first layout. The
+display face fell back to Arial Narrow in the gap and the title reflowed when the
+real one landed: **CLS 0.23, on the largest text on the page.** With all four
+preloaded, CLS is 0. Do not "optimise" the latin preloads away.
+
+## Production headers — `vercel.json`
+
+`serve.py` has always sent the security header list; the production host never
+had it, so the live site shipped with no `X-Content-Type-Options`, no
+`X-Frame-Options` and no real CSP (Mozilla HTTP Observatory: **B, 75/100**).
+`vercel.json` now mirrors `SECURITY_HEADERS` in `serve.py` exactly — **keep the
+two in step.**
+
+It also sets the cache policy Vercel does not: everything under `/assets/` is
+content-stamped or a font that will never change under its own name, so it gets
+`max-age=31536000, immutable`; `css/` and `js/` are not fingerprinted, so they
+get a day plus a week of `stale-while-revalidate`. `index.html`, `robots.txt` and
+`sitemap.xml` keep Vercel's revalidating default so a deploy is live at once.
+
+`.woff2` was missing from `serve.py`'s `TYPES` map. With `nosniff` in the header
+list that would have served the fonts as `application/octet-stream` and the
+browser would have refused them — local only, but it would have looked exactly
+like a broken font file.
 
 ## Forms
 
@@ -231,6 +290,35 @@ auto-advance, all tap targets ≥44 px on mobile.
 | Coverage map rendered blank under test | **Not a site bug — read this before "fixing" it again.** The browser pane reports `document.hidden` and `innerHeight === 0` while Claude's window is hidden, so no IntersectionObserver ever fires and every observer-gated element reads as un-triggered. Hardened anyway, because the cost is one line each and the failure mode is invisible: the coverage dots are **painted in CSS** and the observer only adds the stagger, and both observers also measure `getBoundingClientRect()` once at registration. |
 | FAQ rich result paraphrased the page | The `FAQPage` JSON-LD and the visible `FAQ` array in `js/app.js` had drifted apart. Google requires them to match. The JSON-LD is now generated from the array — **regenerate it whenever the FAQ copy changes.** |
 | `g08` sat in the «Έργα» gallery captioned «Εμπριμέ τεντόπανο» | It is a *damaged* awning — rust-stained cloth, exposed arm — shown in a reel of finished work. It is the repair card’s photo now, where it belongs. |
+
+## Bugs found and fixed in the audit pass (Observatory / PageSpeed / Seobility)
+
+| Bug | Cause |
+|---|---|
+| **Site was effectively unindexable** | `canonical`, `og:url`, `og:image`, `twitter:image`, every JSON-LD `@id`/`url`/`logo`/`image`, `sitemap.xml` and the `Sitemap:` line in `robots.txt` all pointed at `tentes-kentayros.gr`, which is NXDOMAIN. A canonical to a host that does not resolve tells Google the real copy of the page is unreachable. Share previews were blank for the same reason. All repointed at the live origin — see the migration note above. |
+| No security headers in production | `serve.py` sent them, the host had no config at all. `vercel.json` added; Observatory **B 75/100 → A+ expected** (`X-Frame-Options` was −20, `X-Content-Type-Options` −5). |
+| Google Fonts on the critical path | 4.3 s of render-blocking third-party chain in front of first paint. Self-hosted — see «Webfonts». |
+| Hero title reflowed on font swap | The latin subsets were not preloaded but the hero needs them. CLS 0.23 → **0**. |
+| 24 hero frames raced first paint | The sequence is an *upgrade* to the two-photo crossfade, but all 24 stills (0.8 MB phone / 1.7 MB desktop) went on the wire during load and fought the LCP image for bandwidth. Now kicked off on `load` + `requestIdleCallback` — still ready long before anyone has scrolled that far. |
+| 158 KB logo for a 34 px mark | `logo-kentauros.png` is 512×512 and was used in all four slots. Now `logo-kentauros-256.webp` (21 KB) for the header, mobile nav and footer, and `logo-kentauros-512.webp` for the repair-band watermark, which really is drawn up to 460 px wide. The PNG stays on disk for the JSON-LD `logo`. |
+| Fabric poster downloaded twice | The `<picture>` behind the loop fetched `fabric-poster.webp` and the `<video poster>` fetched `fabric-poster.jpg` — 233 KB for the same frame. The poster now points at the webp, so both share one cached file. The works reel already did this correctly; the fabric block had drifted. |
+| Wordmark failed WCAG 2.5.3 Label in Name | `aria-label="ΚΕΝΤΑΥΡΟΣ — Τέντες Ξενιτίδης, αρχική"` put an em dash inside what the reader can see, so the accessible name did not contain the visible text and a speech-recognition user saying what was on screen could not hit the link. Also `href="#"`, now `#hero`. |
+| Title and description were being truncated | 77 and 185 characters; Google cuts at roughly 60 and 160. The phone number fell off the end of the description, which on a local business snippet is the most useful thing in it. Both rewritten to fit. |
+| `.woff2` missing from `serve.py`'s MIME map | See «Production headers». |
+
+**Deliberately not done.** Two PageSpeed items were left alone on purpose:
+
+* **Minifying `css/style.css` and `js/app.js`** — roughly 7 KB and 9 KB after
+  brotli. The JS is `defer`red so its size does not block anything, and 7 KB of
+  CSS is worth well under a tenth of what the fonts were costing. Both files are
+  the documented source of truth for a project with no build step; splitting
+  them into source and shipped copies with nothing to keep the two in sync buys
+  a rounding error and costs the thing that makes this codebase readable.
+* **Recompressing the fabric swatches** — PageSpeed wants ~100 KB off
+  `f-2307-700.webp`. Re-encoding measured badly: lossy-to-lossy only bought 6 %
+  at a visually clean quality, and reaching the suggested saving means q72,
+  which visibly mushes the weave. The weave is the product. They are lazy,
+  below the fold, one at a time, and off the critical path — leave them.
 
 **Harness note.** The browser pane reports `document.hidden` with `innerHeight: 0`
 whenever Claude's window is not in the foreground. In that state screenshots time

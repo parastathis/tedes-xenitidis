@@ -207,23 +207,39 @@ const heroFrameUrl = (dir, i) => `${dir}/f${String(i + 1).padStart(2, '0')}.webp
         lastDrawn = idx;
       };
 
-      for (let i = 0; i < HERO_FRAMES; i++) {
-        const im = new Image();
-        im.decoding = 'async';
-        im.src = heroFrameUrl(dir, i);
-        imgs[i] = im;
-        im.onload = () => {
-          if (++loaded === 1) { sizeCanvas(); draw(0); }
-          // only take over from the photo crossfade once every frame is decoded,
-          // otherwise scrubbing would hit gaps
-          if (loaded === HERO_FRAMES) {
-            framesReady = true;
-            frames.classList.add('is-live');
-            measure();
-          }
-        };
-        im.onerror = () => { framesReady = false; };
-      }
+      /* The sequence is an upgrade, so it must not race the thing it is an
+         upgrade to. Putting 24 stills (~800 KB at phone size, 1.7 MB at
+         desktop) on the wire during load meant they competed with the CSS,
+         the fonts and the hero photo itself for the same few hundred kbit —
+         the crossfade the visitor actually sees first arrived seconds late.
+         The canvas is created now so it keeps its slot in the layer stack;
+         the frames go on the wire once the page has finished loading and the
+         main thread is quiet, which is still long before anyone has scrolled
+         far enough to need them. */
+      const loadFrames = () => {
+        for (let i = 0; i < HERO_FRAMES; i++) {
+          const im = new Image();
+          im.decoding = 'async';
+          im.src = heroFrameUrl(dir, i);
+          imgs[i] = im;
+          im.onload = () => {
+            if (++loaded === 1) { sizeCanvas(); draw(0); }
+            // only take over from the photo crossfade once every frame is decoded,
+            // otherwise scrubbing would hit gaps
+            if (loaded === HERO_FRAMES) {
+              framesReady = true;
+              frames.classList.add('is-live');
+              measure();
+            }
+          };
+          im.onerror = () => { framesReady = false; };
+        }
+      };
+      const whenIdle = cb => window.requestIdleCallback
+        ? requestIdleCallback(cb, { timeout: 2500 })
+        : setTimeout(cb, 200);
+      if (document.readyState === 'complete') whenIdle(loadFrames);
+      else addEventListener('load', () => whenIdle(loadFrames), { once: true });
 
       frames.__draw = draw;
       addEventListener('resize', () => { sizeCanvas(); draw(lastDrawn < 0 ? 0 : lastDrawn); });
@@ -1099,7 +1115,7 @@ const FAQ = [
         '',
         `Σημειώσεις: ${d.get('notes') || '—'}`,
         '',
-        'Στάλθηκε από το tentes-kentayros.gr'
+        'Στάλθηκε από τη φόρμα προσφοράς του site'
       ].join('\n');
 
       location.href = 'mailto:tenteskentayros@hotmail.gr'

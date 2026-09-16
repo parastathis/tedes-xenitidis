@@ -3,9 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Τέντες Ζωγράφου &amp; Πανελλαδικά | ΚΕΝΤΑΥΡΟΣ – Ξενιτίδης | Πέργκολες &amp; Επισκευές</title>
-<meta name="description" content="Βιοτεχνία τεντών από το 1965 — Μαικήνα 82, Ζωγράφου. Τέντες, κασετίνες, πέργκολες, επισκευές &amp; αλλαγή τεντόπανου. Μελέτη και τοποθέτηση σε όλη την Ελλάδα. Δωρεάν μέτρηση. ☎ 210 7751368.">
-<link rel="canonical" href="https://www.tentes-kentayros.gr/">
+<title>Τέντες Ζωγράφου &amp; πέργκολες | ΚΕΝΤΑΥΡΟΣ – Ξενιτίδης</title>
+<meta name="description" content="Βιοτεχνία τεντών από το 1965, Μαικήνα 82, Ζωγράφου. Τέντες, κασετίνες, πέργκολες, επισκευές &amp; αλλαγή τεντόπανου σε όλη την Ελλάδα. Δωρεάν μέτρηση: 210 775 1368.">
+<!-- ORIGIN. tentes-kentayros.gr is not registered yet and does not resolve, so
+     every absolute URL below points at the address the site actually answers
+     on. When the domain goes live, search this file, robots.txt and
+     sitemap.xml for "tedes-xenitidis-lbrh.vercel.app" and swap it - that is
+     the whole migration. -->
+<link rel="canonical" href="https://tedes-xenitidis-lbrh.vercel.app/">
 <meta name="robots" content="index, follow, max-image-preview:large">
 <meta name="geo.region" content="GR-A1">
 <meta name="geo.placename" content="Ζωγράφου, Αττική">
@@ -15,26 +20,36 @@
 <meta property="og:site_name" content="ΚΕΝΤΑΥΡΟΣ – Τέντες Ξενιτίδης">
 <meta property="og:title" content="Τέντες Ζωγράφου &amp; πανελλαδικά | ΚΕΝΤΑΥΡΟΣ – Ξενιτίδης">
 <meta property="og:description" content="Τέντες, πέργκολες και συστήματα σκίασης από τη δική μας βιοτεχνία στη Ζωγράφου. Μελέτη, κατασκευή και τοποθέτηση σε όλη την Ελλάδα.">
-<meta property="og:url" content="https://www.tentes-kentayros.gr/">
-<meta property="og:image" content="https://www.tentes-kentayros.gr/assets/img/og.jpg">
+<meta property="og:url" content="https://tedes-xenitidis-lbrh.vercel.app/">
+<meta property="og:image" content="https://tedes-xenitidis-lbrh.vercel.app/assets/img/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Τέντα ΚΕΝΤΑΥΡΟΣ σε μπαλκόνι πολυκατοικίας στην Αθήνα.">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://www.tentes-kentayros.gr/assets/img/og.jpg">
+<meta name="twitter:image" content="https://tedes-xenitidis-lbrh.vercel.app/assets/img/og.jpg">
 <meta name="referrer" content="strict-origin-when-cross-origin">
 
-<!-- Content-Security-Policy. Real HTTP headers are the authority (serve.py sets
-     these plus frame-ancestors, which a meta tag cannot carry) - this meta copy
-     is what protects the page on a plain static host that sends no headers. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://tile.openstreetmap.org https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org; media-src 'self'; connect-src 'self'; worker-src 'none'; frame-src 'none'">
+<!-- Content-Security-Policy. Real HTTP headers are the authority (vercel.json
+     in production, serve.py locally - both send this plus frame-ancestors,
+     which a meta tag cannot carry). This meta copy is what protects the page on
+     a plain static host that sends no headers. Keep all three in step. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; form-action 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://tile.openstreetmap.org https://a.tile.openstreetmap.org https://b.tile.openstreetmap.org https://c.tile.openstreetmap.org; media-src 'self'; connect-src 'self'; worker-src 'none'; frame-src 'none'">
 <meta name="theme-color" content="#16151A">
 <meta name="color-scheme" content="light dark">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Commissioner:wght@400;600;700&family=Sofia+Sans+Extra+Condensed:wght@800;900&display=swap&subset=greek,latin">
 <link rel="stylesheet" href="css/style.css">
+<!-- All four subsets are preloaded, not just the greek ones. The hero needs
+     latin too - the comma and full stop in the title, the digits in «210 775
+     1368», the «82» in the address - and left to discovery those two files
+     only went on the wire after first layout. The display face fell back to
+     Arial Narrow in the meantime and the title reflowed when the real one
+     landed: a 0.21 layout shift, on the largest text on the page. They were
+     always going to be fetched in the first wave; this only tells the browser
+     so while it is still parsing <head>. -->
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/commissioner-greek.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/commissioner-latin.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/sofia-xcond-greek.woff2" crossorigin>
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/sofia-xcond-latin.woff2" crossorigin>
 <link rel="icon" href="assets/img/logo-kentauros-192.png" type="image/png">
 <link rel="apple-touch-icon" href="assets/img/logo-kentauros-192.png">
 <link rel="preload" as="image" href="assets/img/hero-noon-1600.webp"
@@ -47,11 +62,11 @@
   "@graph": [
     {
       "@type": ["LocalBusiness", "HomeAndConstructionBusiness"],
-      "@id": "https://www.tentes-kentayros.gr/#business",
+      "@id": "https://tedes-xenitidis-lbrh.vercel.app/#business",
       "name": "ΚΕΝΤΑΥΡΟΣ – Τέντες Ξενιτίδης",
       "alternateName": ["Τέντες Κένταυρος", "Ξενιτίδης Τέντες Ζωγράφου"],
       "description": "Βιοτεχνία τεντών και συστημάτων σκίασης στη Ζωγράφου από το 1965. Τέντες με βραχίονες και αντηρίδες, κασετίνες, πέργκολες, ρολοκουρτίνες, επισκευές, αλλαγή τεντόπανου και ειδικές κατασκευές.",
-      "url": "https://www.tentes-kentayros.gr/",
+      "url": "https://tedes-xenitidis-lbrh.vercel.app/",
       "telephone": "+302107751368",
       "email": "tenteskentayros@hotmail.gr",
       "founder": { "@type": "Person", "name": "Στυλιανός Π. Ξενιτίδης" },
@@ -70,8 +85,8 @@
         "sameAs": "https://www.wikidata.org/wiki/Q41"
       },
       "foundingDate": "1965",
-      "logo": "https://www.tentes-kentayros.gr/assets/img/logo-kentauros.png",
-      "image": "https://www.tentes-kentayros.gr/assets/img/og.jpg",
+      "logo": "https://tedes-xenitidis-lbrh.vercel.app/assets/img/logo-kentauros.png",
+      "image": "https://tedes-xenitidis-lbrh.vercel.app/assets/img/og.jpg",
       "geo": {
         "@type": "GeoCoordinates",
         "latitude": 37.9756093,
@@ -97,15 +112,15 @@
     },
     {
       "@type": "WebSite",
-      "@id": "https://www.tentes-kentayros.gr/#website",
-      "url": "https://www.tentes-kentayros.gr/",
+      "@id": "https://tedes-xenitidis-lbrh.vercel.app/#website",
+      "url": "https://tedes-xenitidis-lbrh.vercel.app/",
       "name": "ΚΕΝΤΑΥΡΟΣ – Τέντες Ξενιτίδης",
       "inLanguage": "el-GR",
-      "publisher": { "@id": "https://www.tentes-kentayros.gr/#business" }
+      "publisher": { "@id": "https://tedes-xenitidis-lbrh.vercel.app/#business" }
     },
     {
       "@type": "FAQPage",
-      "@id": "https://www.tentes-kentayros.gr/#faq",
+      "@id": "https://tedes-xenitidis-lbrh.vercel.app/#faq",
       "mainEntity": [
         {
           "@type": "Question",
@@ -154,9 +169,9 @@
 <!-- ══════════════════════════════════════════════════ HEADER -->
 <header class="site-header" id="header">
   <div class="wrap header-inner">
-    <a class="wordmark" href="#" aria-label="ΚΕΝΤΑΥΡΟΣ — Τέντες Ξενιτίδης, αρχική">
-      <img class="wordmark__logo" src="assets/img/logo-kentauros.png"
-           alt="" width="512" height="512" decoding="async">
+    <a class="wordmark" href="#hero" aria-label="Κένταυρος Τέντες Ξενιτίδης — αρχική">
+      <img class="wordmark__logo" src="assets/img/logo-kentauros-256.webp"
+           alt="" width="256" height="256" decoding="async">
       <span class="wordmark__text">
         <span class="wordmark__name">Κένταυρος</span>
         <span class="wordmark__sub">Τέντες Ξενιτίδης</span>
@@ -220,7 +235,7 @@
 </header>
 
 <nav class="mobile-nav" id="mobileNav" aria-label="Πλοήγηση κινητού">
-  <img class="mobile-nav__mark" src="assets/img/logo-kentauros.png" alt="" width="512" height="512" decoding="async">
+  <img class="mobile-nav__mark" src="assets/img/logo-kentauros-256.webp" alt="" width="256" height="256" decoding="async">
   <a href="#kataskeues">Κατασκευές</a>
   <a href="#fos">Το φως</a>
   <a href="#yfasma">Υφάσματα</a>
@@ -387,7 +402,7 @@
       <source srcset="assets/img/fabric-poster.webp" type="image/webp">
       <img src="assets/img/fabric-poster.jpg" alt="" loading="lazy" decoding="async" width="1800" height="1013">
     </picture>
-    <video id="fabricVideo" playsinline muted loop preload="none" poster="assets/img/fabric-poster.jpg">
+    <video id="fabricVideo" playsinline muted loop preload="none" poster="assets/img/fabric-poster.webp">
       <source src="assets/video/fabric-1280.mp4" type="video/mp4">
     </video>
   </div>
@@ -575,7 +590,7 @@
 
 <!-- ══════════════════════════════════════════════════ ΕΠΙΣΚΕΥΕΣ -->
 <section class="section repair" id="episkeues" aria-labelledby="episkeues-title">
-  <img class="repair__mark" src="assets/img/logo-kentauros.png" alt="" width="512" height="512" loading="lazy" decoding="async">
+  <img class="repair__mark" src="assets/img/logo-kentauros-512.webp" alt="" width="512" height="512" loading="lazy" decoding="async">
   <div class="wrap repair__inner">
     <div data-reveal>
       <p class="eyebrow eyebrow--on-wine">Γρήγορη γραμμή</p>
@@ -819,7 +834,7 @@
 <footer class="site-footer">
   <div class="wrap site-footer__inner">
     <p class="site-footer__brand" style="margin:0">
-      <img src="assets/img/logo-kentauros.png" alt="" width="512" height="512" loading="lazy" decoding="async">
+      <img src="assets/img/logo-kentauros-256.webp" alt="" width="256" height="256" loading="lazy" decoding="async">
       <span>© <span id="year">2026</span> ΚΕΝΤΑΥΡΟΣ — Τέντες Ξενιτίδης · Μαικήνα 82, Ζωγράφου<br>
       <small>Βιοτεχνία συστημάτων σκίασης από το 1965</small></span>
     </p>

@@ -1,0 +1,12 @@
+Commissioner — Copyright 2018 The Commissioner Project Authors
+  https://github.com/kosbarts/Commissioner
+
+Sofia Sans Extra Condensed — Copyright 2021 The Sofia Sans Project Authors
+  https://github.com/lettersoup/Sofia-Sans
+
+Both families are licensed under the SIL Open Font License, Version 1.1.
+Full licence text: https://openfontlicense.org/
+
+The .woff2 files in this directory are the unmodified greek and latin
+subsets Google Fonts serves for these families, copied here so the page
+does not have to reach a third-party origin to paint.

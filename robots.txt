@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.tentes-kentayros.gr/sitemap.xml
+Sitemap: https://tedes-xenitidis-lbrh.vercel.app/sitemap.xml
