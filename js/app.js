@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ΚΕΝΤΑΥΡΟΣ — Τέντες Ξενιτίδης
+   ΚΕΝΤΑΥΡΟΣ · Τέντες Ξενιτίδης
    No framework, no build step. Everything degrades if JS dies.
    ========================================================================== */
 (() => {
@@ -11,11 +11,11 @@ const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /* The fabric the visitor picked in «Διάλεξε το πανί σου». The picker writes it,
-   the quote wizard reads it back into the request — so a choice made halfway
+   the quote wizard reads it back into the request, so a choice made halfway
    up the page is still on the email that leaves the bottom of it. */
 let chosenFabric = null;
 
-/* Motion media is an upgrade, never a requirement — every section is complete
+/* Motion media is an upgrade, never a requirement, every section is complete
    without it. We honour the two signals the user actually chose (reduced
    motion, data-saver) and deliberately ignore `effectiveType`: it is a guess,
    it is frequently wrong on first paint, and reading it ONCE at load meant a
@@ -25,7 +25,7 @@ const motionOK = () => !REDUCED && !(navigator.connection || {}).saveData;
 
 /* HERO FRAME SEQUENCE
    Scrubbing a <video> by writing currentTime forces a seek + decoder flush on
-   every scroll frame — that is what made it stutter. Instead we ship the same
+   every scroll frame, that is what made it stutter. Instead we ship the same
    clip as 24 pre-decoded WebP stills and blit the right one to a canvas: no
    seeking, no decode spikes, and it tracks the scroll exactly. */
 const HERO_FRAMES = 24;
@@ -34,7 +34,7 @@ const heroFrameDir = () =>
 const heroFrameUrl = (dir, i) => `${dir}/f${String(i + 1).padStart(2, '0')}.webp`;
 
 /* ---------------------------------------------------------------- grain */
-/* Procedural film grain — cheaper than shipping a PNG and never tiles visibly */
+/* Procedural film grain, cheaper than shipping a PNG and never tiles visibly */
 {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="180" height="180">
     <filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="3"/>
@@ -52,7 +52,7 @@ const heroFrameUrl = (dir, i) => `${dir}/f${String(i + 1).padStart(2, '0')}.webp
 
   /* The header stays transparent (light type over the dark hero gradient) for
      the WHOLE shade animation, and only turns solid once the hero has finished
-     and released — a pale bar sitting over the cinematic hero kills it.
+     and released, a pale bar sitting over the cinematic hero kills it.
      Falls back to a simple offset if the hero is ever absent. */
   const sticky = $('.hero__sticky');
   const stickPoint = () => hero
@@ -153,7 +153,7 @@ const heroFrameUrl = (dir, i) => `${dir}/f${String(i + 1).padStart(2, '0')}.webp
 }
 
 /* ==========================================================================
-   HERO — «Η σκιά πέφτει»
+   HERO, «Η σκιά πέφτει»
    Scroll drives three things at once:
      --shade  0→1  glare fades out, cool shade fades in
      --sweep  0→132%  the hard shadow edge crosses the frame
@@ -170,7 +170,7 @@ const heroFrameUrl = (dir, i) => `${dir}/f${String(i + 1).padStart(2, '0')}.webp
 
     /* The two-photo crossfade is the guaranteed floor (~67 KB at phone size).
        The frame sequence layers on top and only becomes visible once every
-       frame has decoded — so the hero is never blank and never janky. */
+       frame has decoded, so the hero is never blank and never janky. */
     if (motionOK()) {
       const dir = heroFrameDir();
       const imgs = new Array(HERO_FRAMES);
@@ -210,7 +210,7 @@ const heroFrameUrl = (dir, i) => `${dir}/f${String(i + 1).padStart(2, '0')}.webp
       /* The sequence is an upgrade, so it must not race the thing it is an
          upgrade to. Putting 24 stills (~800 KB at phone size, 1.7 MB at
          desktop) on the wire during load meant they competed with the CSS,
-         the fonts and the hero photo itself for the same few hundred kbit —
+         the fonts and the hero photo itself for the same few hundred kbit -
          the crossfade the visitor actually sees first arrived seconds late.
          The canvas is created now so it keeps its slot in the layer stack;
          the frames go on the wire once the page has finished loading and the
@@ -247,7 +247,7 @@ const heroFrameUrl = (dir, i) => `${dir}/f${String(i + 1).padStart(2, '0')}.webp
 
     /* Travel is measured against the sticky child, NOT innerHeight. Both the
        section and the sticky are sized in svh, so this stays constant while a
-       mobile URL bar slides in and out — using innerHeight made the whole
+       mobile URL bar slides in and out, using innerHeight made the whole
        scrub rescale mid-gesture, which is what made scrolling feel broken. */
     const stickyEl = $('.hero__sticky');
 
@@ -263,7 +263,7 @@ const heroFrameUrl = (dir, i) => `${dir}/f${String(i + 1).padStart(2, '0')}.webp
       }
     };
 
-    /* Scroll position IS the input — no easing toward it. Any smoothing here
+    /* Scroll position IS the input, no easing toward it. Any smoothing here
        reads as lag, because the picture trails the finger. We just batch into
        one rAF per scroll burst and paint the exact scroll state. */
     const measure = () => {
@@ -282,7 +282,7 @@ const heroFrameUrl = (dir, i) => `${dir}/f${String(i + 1).padStart(2, '0')}.webp
    Split into word wrappers (so wrapping still works) and letter spans, each
    carrying its own index for the stagger. «ΣΚΙΑ» gets a second index of its
    own, so its letters drop into shade in step with the awning crossing them.
-   Skipped entirely for reduced motion — the CSS then keeps the line-at-a-time
+   Skipped entirely for reduced motion, the CSS then keeps the line-at-a-time
    rise it falls back to. */
 {
   const title = $('#hero-title');
@@ -334,24 +334,24 @@ const heroFrameUrl = (dir, i) => `${dir}/f${String(i + 1).padStart(2, '0')}.webp
 }
 
 /* ==========================================================================
-   ΚΑΤΑΣΚΕΥΕΣ — the real services, photographed on real jobs
+   ΚΑΤΑΣΚΕΥΕΣ, the real services, photographed on real jobs
    ========================================================================== */
 const PRODUCTS = [
   {
     t: 'Τέντες με βραχίονες',
-    d: 'Η κλασική τέντα μπαλκονιού. Αρθρωτοί βραχίονες, τίποτα δεν πατάει στο κάγκελο, καλύπτει μεγάλα ανοίγματα — χειροκίνητη με μανιβέλα ή ηλεκτρική με τηλεχειριστήριο.',
+    d: 'Η κλασική τέντα μπαλκονιού. Αρθρωτοί βραχίονες, τίποτα δεν πατάει στο κάγκελο, καλύπτει μεγάλα ανοίγματα, χειροκίνητη με μανιβέλα ή ηλεκτρική με τηλεχειριστήριο.',
     img: 'assets/img/p-vraxiones',
     alt: 'Τέντα με αρθρωτούς βραχίονες, μισοανοιγμένη πάνω από μπαλκόνι, με τον μηχανισμό ορατό.'
   },
   {
     t: 'Τέντες με αντηρίδες',
-    d: 'Ίσιες αντηρίδες που πατούν στο κάγκελο ή στον τοίχο. Πιο στιβαρή λύση σε ανοιχτά, ανεμοδαρμένα μπαλκόνια — και η οικονομικότερη όταν το άνοιγμα είναι μεγάλο.',
+    d: 'Ίσιες αντηρίδες που πατούν στο κάγκελο ή στον τοίχο. Πιο στιβαρή λύση σε ανοιχτά, ανεμοδαρμένα μπαλκόνια, και η οικονομικότερη όταν το άνοιγμα είναι μεγάλο.',
     img: 'assets/img/p-antirides',
     alt: 'Τέντα μπαλκονιού στηριγμένη με ίσιες αντηρίδες, με κυματιστό βολάν.'
   },
   {
     t: 'Κασετίνες',
-    d: 'Το πανί μαζεύεται ολόκληρο μέσα σε κλειστή κασέτα αλουμινίου. Όταν είναι κλειστή δεν τη βρίσκει ούτε σκόνη ούτε βροχή — γι’ αυτό κρατάει περισσότερο.',
+    d: 'Το πανί μαζεύεται ολόκληρο μέσα σε κλειστή κασέτα αλουμινίου. Όταν είναι κλειστή δεν τη βρίσκει ούτε σκόνη ούτε βροχή, γι’ αυτό κρατάει περισσότερο.',
     img: 'assets/img/p-kasetina',
     alt: 'Τέντα κασετίνα από αλουμίνιο τοποθετημένη σε μπαλκόνι πολυκατοικίας.'
   },
@@ -369,7 +369,7 @@ const PRODUCTS = [
   },
   {
     t: 'Επισκευές τεντών',
-    d: 'Βραχίονες, μηχανισμοί, μοτέρ και αυτοματισμοί. Σε τέντα δική μας ή οποιουδήποτε άλλου — δεν ρωτάμε ποιος την έβαλε.',
+    d: 'Βραχίονες, μηχανισμοί, μοτέρ και αυτοματισμοί. Σε τέντα δική μας ή οποιουδήποτε άλλου, δεν ρωτάμε ποιος την έβαλε.',
     img: 'assets/img/p-episkeui',
     alt: 'Τέντα με ξεθωριασμένο, λεκιασμένο πανί και τον αρθρωτό βραχίονα της, πριν την επισκευή.'
   },
@@ -388,46 +388,81 @@ const PRODUCTS = [
 ];
 
 {
+  /* v2: a workshop catalogue, not eight identical cards. Names stack as ruled
+     rows; the chosen one fills a stage beside them (desktop) or opens in place
+     (phone). One quote button, carrying the chosen product into the wizard. */
   const host = $('#products');
   if (host) {
-    host.innerHTML = PRODUCTS.map((p, i) => `
-      <a class="product" href="#prosfora" data-reveal style="--d:${i * 55}ms" data-product="${p.t}">
-        <span class="product__media">
-          <picture>
-            <source type="image/webp" sizes="(min-width:1100px) 25vw, (min-width:640px) 50vw, 100vw"
-                    srcset="${p.img}-640.webp 640w, ${p.img}-1000.webp 1000w">
-            <img src="${p.img}.jpg" alt="${p.alt}" loading="lazy" decoding="async" width="1000" height="750">
-          </picture>
-          <span class="product__idx">${String(i + 1).padStart(2, '0')}</span>
-        </span>
-        <span class="product__body">
-          <span class="product__title">${p.t}</span>
-          <span class="product__text">${p.d}</span>
-          <span class="product__cta">Ζήτησε προσφορά
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </span>
-        </span>
-      </a>`).join('');
+    const pic = (p, sizes, eager) => `
+      <picture>
+        <source type="image/webp" sizes="${sizes}" srcset="${p.img}-640.webp 640w, ${p.img}-1000.webp 1000w">
+        <img src="${p.img}.jpg" alt="${p.alt}" ${eager ? '' : 'loading="lazy"'} decoding="async" width="1000" height="750">
+      </picture>`;
+    const cta = p => `
+      <a class="btn btn--primary catalog__cta" href="#prosfora" data-product="${p.t}">Ζήτησε προσφορά
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="square" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>`;
+
+    host.className = 'catalog';
+    host.innerHTML = `
+      <ol class="catalog__list" role="list">
+        ${PRODUCTS.map((p, i) => `
+          <li class="catalog__item${i === 0 ? ' is-on' : ''}" data-reveal style="--d:${i * 50}ms">
+            <button class="catalog__row" type="button" aria-expanded="${i === 0}" aria-controls="cat-${i}" data-i="${i}">
+              <span class="catalog__name">${p.t}</span>
+              <span class="catalog__mark" aria-hidden="true"></span>
+            </button>
+            <div class="catalog__detail" id="cat-${i}">
+              <div class="catalog__media">${pic(p, '100vw')}</div>
+              <p class="catalog__text">${p.d}</p>
+              ${cta(p)}
+            </div>
+          </li>`).join('')}
+      </ol>
+      <div class="catalog__stage" aria-live="polite">
+        <div class="catalog__media" id="catStageMedia">${pic(PRODUCTS[0], '(min-width:900px) 55vw, 100vw', true)}</div>
+        <div class="catalog__stagebody">
+          <h3 class="catalog__stagetitle" id="catStageTitle">${PRODUCTS[0].t}</h3>
+          <p class="catalog__text" id="catStageText">${PRODUCTS[0].d}</p>
+          <div id="catStageCta">${cta(PRODUCTS[0])}</div>
+        </div>
+      </div>`;
     document.dispatchEvent(new Event('reveal:scan'));
 
-    /* 8 cards do not divide evenly into a 3-column grid, so the last row can
-       end with a dead cell. Stretch the final card across whatever tracks are
-       left over rather than leaving a hole in the rule grid. */
-    const cards = [...host.children];
-    let lastCols = 0;
-    const fillTail = () => {
-      const cols = getComputedStyle(host).gridTemplateColumns.split(' ').filter(Boolean).length;
-      if (cols === lastCols) return;
-      lastCols = cols;
-      cards.forEach(c => c.style.gridColumn = '');
-      if (cols < 2) return;
-      const rem = cards.length % cols;
-      if (rem) cards[cards.length - 1].style.gridColumn = `span ${cols - rem + 1}`;
-    };
-    fillTail();
-    addEventListener('resize', fillTail);
+    const items = [...host.querySelectorAll('.catalog__item')];
+    const stageMedia = $('#catStageMedia'), stageTitle = $('#catStageTitle'),
+          stageText = $('#catStageText'), stageCta = $('#catStageCta');
+    const wide = matchMedia('(min-width: 900px)');
+    let current = 0;
 
-    /* clicking a card pre-selects it in the wizard — one less thing to answer */
+    const show = (i, fromHover) => {
+      if (i === current && fromHover) return;
+      const p = PRODUCTS[i];
+      items.forEach((el, k) => {
+        const on = k === i;
+        el.classList.toggle('is-on', on);
+        el.querySelector('.catalog__row').setAttribute('aria-expanded', String(on));
+      });
+      if (wide.matches) {
+        stageMedia.innerHTML = pic(p, '(min-width:900px) 55vw, 100vw', true);
+        stageMedia.classList.remove('is-wipe'); void stageMedia.offsetWidth; stageMedia.classList.add('is-wipe');
+        stageTitle.textContent = p.t;
+        stageText.textContent = p.d;
+        stageCta.innerHTML = cta(p);
+      }
+      current = i;
+    };
+
+    host.addEventListener('click', e => {
+      const row = e.target.closest('.catalog__row');
+      if (row) show(+row.dataset.i);
+    });
+    host.addEventListener('pointerover', e => {
+      const row = e.target.closest('.catalog__row');
+      if (row && wide.matches && e.pointerType === 'mouse') show(+row.dataset.i, true);
+    });
+
+    /* clicking a quote button pre-selects that product in the wizard */
     host.addEventListener('click', e => {
       const card = e.target.closest('[data-product]');
       if (!card) return;
@@ -451,7 +486,7 @@ const PRODUCTS = [
 /* ==========================================================================
    «ΤΟ ΦΩΣ ΣΤΙΣ 3»
    The control is a real <input type="range">. Dragging the photograph itself
-   fought the browser's native image-drag and its scroll gesture — which is
+   fought the browser's native image-drag and its scroll gesture, which is
    exactly what made this section feel broken. A range input gets touch,
    mouse, keyboard and assistive tech right for free.
    ========================================================================== */
@@ -468,9 +503,9 @@ const PRODUCTS = [
     const H_MIN = 10, H_MAX = 19;
     const NOON = ((14 - H_MIN) / (H_MAX - H_MIN)) * 100;   // 44.44
     const COPY = [
-      { h: 10, txt: '10:00 — Ο ήλιος είναι ακόμη χαμηλά και πλάγιος. Η τέντα μαζεμένη, το μπαλκόνι φωτεινό και δροσερό.' },
-      { h: 14, txt: '14:00 — Ο ήλιος κάθετα από πάνω. Εδώ κρίνεται η προεξοχή: αν είναι λίγη, η σκιά δεν φτάνει μέχρι το τραπέζι.' },
-      { h: 19, txt: '19:00 — Χαμηλό φως που μπαίνει πλάγια κάτω από την τέντα. Εδώ βοηθάει η ρολοκουρτίνα ή μια μεγαλύτερη κλίση.' }
+      { h: 10, txt: '10:00 · Ο ήλιος είναι ακόμη χαμηλά και πλάγιος. Η τέντα μαζεμένη, το μπαλκόνι φωτεινό και δροσερό.' },
+      { h: 14, txt: '14:00 · Ο ήλιος κάθετα από πάνω. Εδώ κρίνεται η προεξοχή: αν είναι λίγη, η σκιά δεν φτάνει μέχρι το τραπέζι.' },
+      { h: 19, txt: '19:00 · Χαμηλό φως που μπαίνει πλάγια κάτω από την τέντα. Εδώ βοηθάει η ρολοκουρτίνα ή μια μεγαλύτερη κλίση.' }
     ];
 
     const apply = () => {
@@ -516,15 +551,15 @@ const PRODUCTS = [
 }
 
 /* ==========================================================================
-   ΕΡΓΑ — the workshop's own reel, and a gallery of finished jobs
+   ΕΡΓΑ, the workshop's own reel, and a gallery of finished jobs
    ========================================================================== */
 const GALLERY = [
-  ['assets/img/g01', 'Καταστήματα — μπορντό τέντες σε τρεις ορόφους'],
-  ['assets/img/g02', 'Πολυκατοικία — ενιαία όψη σε όλα τα μπαλκόνια'],
+  ['assets/img/g01', 'Καταστήματα, μπορντό τέντες σε τρεις ορόφους'],
+  ['assets/img/g02', 'Πολυκατοικία, ενιαία όψη σε όλα τα μπαλκόνια'],
   ['assets/img/g03', 'Πέργκολα με θέα, σε βεράντα μονοκατοικίας'],
   ['assets/img/g04', 'Πέργκολα αλουμινίου με κάθετο πανί, δίπλα σε πισίνα'],
   ['assets/img/g05', 'Ιστίο σκίασης πάνω από πισίνα'],
-  ['assets/img/g06', 'Πολυκατοικία — τέντες σε κάθε επίπεδο'],
+  ['assets/img/g06', 'Πολυκατοικία, τέντες σε κάθε επίπεδο'],
   ['assets/img/g07', 'Ανεμοφράκτες και κάθετα κρύσταλλα σε βεράντα']
 ];
 
@@ -558,7 +593,7 @@ const GALLERY = [
 
 /* ------------------------------------------- ambient loops: play only in view
    `play()` returns a promise that REJECTS if a pause lands before playback
-   starts — which is exactly what happens when you scroll past a video and
+   starts, which is exactly what happens when you scroll past a video and
    back. Hanging the reveal off that promise left the loop paused behind its
    poster forever, so we hang it off the `playing` event instead and re-try
    the play on every re-entry. */
@@ -588,7 +623,7 @@ const GALLERY = [
    The header used to hard-code one number. There are three ways to reach the
    workshop and the visitor is the one who knows which suits them, so the header
    asks instead of deciding. Without JS the trigger stays what it is in the
-   markup — a plain tel: link to the workshop line — so the header never becomes
+   markup, a plain tel: link to the workshop line, so the header never becomes
    a dead button.
    ========================================================================== */
 {
@@ -610,7 +645,7 @@ const GALLERY = [
     link.replaceWith(btn);
 
     /* `hidden` is the no-JS state. From here the class drives it, so the panel
-       can animate — but it stays inert while closed, out of the tab order. */
+       can animate, but it stays inert while closed, out of the tab order. */
     panel.hidden = false;
     panel.inert = true;
 
@@ -650,12 +685,12 @@ const GALLERY = [
 }
 
 /* ==========================================================================
-   ΚΑΛΥΨΗ — the country, as a dot matrix
+   ΚΑΛΥΨΗ, the country, as a dot matrix
    The old diagram walked a van between nine Attica suburbs, which said the
    opposite of the truth: the workshop builds in Zografou and installs
    anywhere in Greece. This is the whole country, rasterised from its own
-   coastline onto a 46x46 grid — mainland, Peloponnese, Euboea, Crete and the
-   Aegean and Ionian islands — with the workshop as the one red mark.
+   coastline onto a 46x46 grid, mainland, Peloponnese, Euboea, Crete and the
+   Aegean and Ionian islands, with the workshop as the one red mark.
 
    The dots are grouped into rings by distance from the workshop and each ring
    is ONE <path>, so the whole map is a handful of nodes rather than six
@@ -713,7 +748,7 @@ const GREECE_MASK = [
 const GREECE_HUB = { x: 22.5, y: 24.9 };      // Μαικήνα 82, on the same grid
 
 /* Where the vans go. Nine headings, spread right around the compass so the fan
-   reads as "everywhere" rather than "these nine towns" — they are deliberately
+   reads as "everywhere" rather than "these nine towns", they are deliberately
    unlabelled. Grid coordinates, projected the same way the mask was. */
 const GREECE_ROUTES = [
   [18.4,  8.0],   // Θεσσαλονίκη
@@ -887,32 +922,32 @@ const GREECE_REGIONS = {
     const io = new IntersectionObserver(([en]) => en.isIntersecting && light(),
                                         { threshold: .12 });
     io.observe(host);
-    // already in frame on arrival (restored scroll, deep link) — see note above
+    // already in frame on arrival (restored scroll, deep link), see note above
     if (host.getBoundingClientRect().top < innerHeight) light();
   }
 }
 
 /* ==========================================================================
-   ΤΟ ΠΑΝΙ — the workshop's own sample book
+   ΤΟ ΠΑΝΙ, the workshop's own sample book
    Every one of these is a photograph of a page in the book that sits on the
    bench, cropped to the swatch and carrying the manufacturer's real design
-   code — so a visitor can ring up and say "the 8054" and be understood.
+   code, so a visitor can ring up and say "the 8054" and be understood.
    ========================================================================== */
 const FABRICS = [
-  ['2307', 'Τουλίπα',        'Κρεμ βάση με αραιή τουλίπα — διακριτικό μοτίβο που δεν κουράζει σε μεγάλο άνοιγμα.'],
+  ['2307', 'Τουλίπα',        'Κρεμ βάση με αραιή τουλίπα, διακριτικό μοτίβο που δεν κουράζει σε μεγάλο άνοιγμα.'],
   ['8060', 'Ελιά',           'Κλαδιά ελιάς σε λαδί πράσινο. Κάνει τη σκιά να δένει με κήπο ή βεράντα με φυτά.'],
   ['8028', 'Φύλλα',          'Φθινοπωρινά φύλλα σε χαμηλότονο μπεζ. Ζεστό χωρίς να σκουραίνει το μπαλκόνι.'],
-  ['8038', 'Καμέλια',       'Έντονα φούξια άνθη σε ανοιχτό φόντο — το πιο δυνατό σχέδιο της σειράς.'],
+  ['8038', 'Καμέλια',       'Έντονα φούξια άνθη σε ανοιχτό φόντο, το πιο δυνατό σχέδιο της σειράς.'],
   ['8048', 'Μαργαρίτα',     'Μεγάλη ροζ μαργαρίτα με γαλάζιες λεπτομέρειες. Πολύ καλό σε μικρά μπαλκόνια.'],
   ['8059', 'Γραμμή',         'Λεπτό σχέδιο σε γραμμή, σχεδόν μονόχρωμο. Για όποιον δεν θέλει λουλούδια.'],
   ['2271', 'Ουρανός',        'Γαλάζιος ουρανός με σύννεφα. Φωτίζει τον χώρο από κάτω αντί να τον σκοτεινιάζει.'],
   ['3208', 'Μπουκέτο',       'Πλούσια ανθοδέσμη σε ωχρα και ροζ. Κλασικό σχέδιο πολυκατοικίας.'],
-  ['8054', 'Πέταλα',         'Γκρι πέταλα σε τόνους του ίδιου χρώματος — μοντέρνο, ουδέτερο, ταιριάζει παντού.'],
+  ['8054', 'Πέταλα',         'Γκρι πέταλα σε τόνους του ίδιου χρώματος, μοντέρνο, ουδέτερο, ταιριάζει παντού.'],
   ['8023', 'Βεντάλια',       'Αμμόχρωμη βάση με αμυδρό γκρι μοτίβο. Το πιο διακριτικό απ’ όλα.'],
   ['8029', 'Κρίνος',         'Λευκός κρίνος με πράσινες σκιές. Καθαρό και φωτεινό.'],
   ['8047', 'Μανόλια',       'Κλαδί μανόλιας σε απαλό ροζ. Ζεστό φως μέσα στο σπίτι το απόγευμα.'],
   ['8049', 'Τριαντάφυλλο',  'Λευκά και ροζ τριαντάφυλλα σε μεγέθυνση. Για μεγάλες επιφάνειες.'],
-  ['8056', 'Φοίνικας',       'Γκρι φύλλα φοίνικα — το πιο καλοκαιρινό σχέδιο, χωρίς χρώμα.'],
+  ['8056', 'Φοίνικας',       'Γκρι φύλλα φοίνικα, το πιο καλοκαιρινό σχέδιο, χωρίς χρώμα.'],
   ['8058', 'Ορχιδέα',        'Μοβ ορχιδέα σε λεπτή γραμμή. Διακριτικό χρώμα, καθαρό σχέδιο.'],
 ];
 
@@ -927,7 +962,7 @@ const FABRICS = [
       <label class="pania__opt${i === 0 ? ' is-on' : ''}">
         <input type="radio" name="fabric" value="${c}"${i === 0 ? ' checked' : ''}
                data-name="${nm}" data-desc="${d}">
-        <img src="assets/img/f-${c}-200.webp" alt="Ύφασμα τέντας Design ${c} — ${nm}"
+        <img src="assets/img/f-${c}-200.webp" alt="Ύφασμα τέντας Design ${c} · ${nm}"
              width="200" height="200" loading="lazy" decoding="async">
         <span class="pania__tag"><b>${nm}</b><i>${c}</i></span>
       </label>`).join('');
@@ -937,13 +972,13 @@ const FABRICS = [
     const pick = input => {
       const c = input.value, nm = input.dataset.name;
       const big = new Image();
-      big.onload = () => { shot.src = big.src; shot.alt = `Ύφασμα τέντας, κωδικός Design ${c} — «${nm}»`; };
+      big.onload = () => { shot.src = big.src; shot.alt = `Ύφασμα τέντας, κωδικός Design ${c} · «${nm}»`; };
       big.src = `assets/img/f-${c}-700.webp`;
       if (code) code.textContent = 'Design ' + c;
       if (name) name.textContent = nm;
       if (desc) desc.textContent = input.dataset.desc;
       $$('.pania__opt', grid).forEach(l => l.classList.toggle('is-on', l.contains(input)));
-      chosenFabric = `Design ${c} — ${nm}`;
+      chosenFabric = `Design ${c} · ${nm}`;
       if (cta) cta.dataset.fabric = chosenFabric;
     };
 
@@ -968,23 +1003,23 @@ const FABRICS = [
 }
 
 /* ==========================================================================
-   FAQ — mirrors the FAQPage JSON-LD exactly
+   FAQ, mirrors the FAQPage JSON-LD exactly
    ========================================================================== */
 const FAQ = [
   ['Πόσο κοστίζει μια τέντα μπαλκονιού;',
    'Δεν υπάρχει ενιαία τιμή, και όποιος σου δώσει τιμή στο τηλέφωνο χωρίς να δει τον χώρο μαντεύει. Το κόστος εξαρτάται από τις διαστάσεις, τον τύπο κατασκευής (βραχίονες, αντηρίδες, κασετίνα, χειροκίνητο ή ηλεκτρικό), το ύφασμα και τη δυσκολία της τοποθέτησης. Γι’ αυτό ερχόμαστε, μετράμε και δίνουμε γραπτή προσφορά.'],
   ['Βραχίονες ή αντηρίδες;',
-   'Οι βραχίονες είναι αρθρωτοί: η τέντα ανοίγει και κλείνει ελεύθερα και τίποτα δεν πατάει στο κάγκελο. Οι αντηρίδες είναι ίσια στηρίγματα που πατούν στο κάγκελο ή στον τοίχο — πιο στιβαρές σε ανοιχτά, ανεμοδαρμένα μπαλκόνια και πιο οικονομικές όταν το άνοιγμα είναι μεγάλο. Θα σου πούμε ποιο συμφέρει όταν δούμε τον χώρο.'],
+   'Οι βραχίονες είναι αρθρωτοί: η τέντα ανοίγει και κλείνει ελεύθερα και τίποτα δεν πατάει στο κάγκελο. Οι αντηρίδες είναι ίσια στηρίγματα που πατούν στο κάγκελο ή στον τοίχο, πιο στιβαρές σε ανοιχτά, ανεμοδαρμένα μπαλκόνια και πιο οικονομικές όταν το άνοιγμα είναι μεγάλο. Θα σου πούμε ποιο συμφέρει όταν δούμε τον χώρο.'],
   ['Επισκευάζετε τέντα που έχει τοποθετήσει άλλος;',
    'Ναι. Αναλαμβάνουμε επισκευές σε μηχανισμούς, βραχίονες και μοτέρ, καθώς και αλλαγή τεντόπανου σε υπάρχοντα σκελετό, ανεξάρτητα από το ποιος έκανε την αρχική κατασκευή.'],
   ['Χρειάζεται άδεια για τέντα σε πολυκατοικία;',
    'Για μπαλκόνι σε πολυκατοικία συνήθως παίζει ρόλο ο κανονισμός της πολυκατοικίας ως προς το χρώμα και τον τύπο, ώστε η όψη να μείνει ενιαία. Για κατάστημα που βγαίνει πάνω από πεζοδρόμιο ή κοινόχρηστο χώρο εμπλέκεται και ο δήμος. Θα σου πούμε τι ισχύει στη δική σου περίπτωση όταν δούμε τον χώρο.'],
   ['Ποιες περιοχές καλύπτετε;',
-   'Όλη την Ελλάδα. Το εργαστήριο είναι στη Ζωγράφου, Μαικήνα 82, και από εκεί βγαίνει κάθε κατασκευή. Εξυπηρετούμε όλη την Αττική, την ηπειρωτική Ελλάδα και τα νησιά — Κρήτη, Κυκλάδες, Δωδεκάνησα, Ιόνιο, Βόρειο Αιγαίο. Για δουλειά εκτός Αττικής συνεννοούμαστε από το τηλέφωνο και οργανώνουμε μέτρηση και τοποθέτηση μαζί.'],
+   'Όλη την Ελλάδα. Το εργαστήριο είναι στη Ζωγράφου, Μαικήνα 82, και από εκεί βγαίνει κάθε κατασκευή. Εξυπηρετούμε όλη την Αττική, την ηπειρωτική Ελλάδα και τα νησιά, Κρήτη, Κυκλάδες, Δωδεκάνησα, Ιόνιο, Βόρειο Αιγαίο. Για δουλειά εκτός Αττικής συνεννοούμαστε από το τηλέφωνο και οργανώνουμε μέτρηση και τοποθέτηση μαζί.'],
   ['Αντέχει η τέντα στον αέρα;',
-   'Καμία ανοιχτή τέντα δεν είναι φτιαγμένη να μένει ανοιχτή σε δυνατό αέρα — ούτε η ακριβότερη. Αυτό που κάνει πραγματικά τη διαφορά στη διάρκεια ζωής της είναι η σωστή στήριξη στον φέροντα τοίχο και ένας αισθητήρας ανέμου που τη μαζεύει μόνος του όταν δεν είσαι σπίτι.'],
+   'Καμία ανοιχτή τέντα δεν είναι φτιαγμένη να μένει ανοιχτή σε δυνατό αέρα, ούτε η ακριβότερη. Αυτό που κάνει πραγματικά τη διαφορά στη διάρκεια ζωής της είναι η σωστή στήριξη στον φέροντα τοίχο και ένας αισθητήρας ανέμου που τη μαζεύει μόνος του όταν δεν είσαι σπίτι.'],
   ['Πόσο χρόνο θέλει η κατασκευή και η τοποθέτηση;',
-   'Μετά τη μέτρηση και την έγκριση της προσφοράς, ο χρόνος εξαρτάται από τον τύπο κατασκευής και τη διαθεσιμότητα του υφάσματος. Θα πάρεις συγκεκριμένο χρονοδιάγραμμα μαζί με την προσφορά — όχι αόριστες υποσχέσεις.']
+   'Μετά τη μέτρηση και την έγκριση της προσφοράς, ο χρόνος εξαρτάται από τον τύπο κατασκευής και τη διαθεσιμότητα του υφάσματος. Θα πάρεις συγκεκριμένο χρονοδιάγραμμα μαζί με την προσφορά, όχι αόριστες υποσχέσεις.']
 ];
 
 {
@@ -1013,7 +1048,7 @@ const FAQ = [
 }
 
 /* ==========================================================================
-   QUOTE WIZARD — 4 taps, then a real mailto with everything filled in
+   QUOTE WIZARD, 4 taps, then a real mailto with everything filled in
    ========================================================================== */
 {
   const form = $('#wizard');
@@ -1041,7 +1076,7 @@ const FAQ = [
       if (!input) return;
       $$(`.opt input[name="${input.name}"]`, form)
         .forEach(i => i.closest('.opt').classList.toggle('is-selected', i.checked));
-      // choosing an answer advances automatically — fewer taps, higher completion
+      // choosing an answer advances automatically, fewer taps, higher completion
       if (!REDUCED && input.checked) {
         const idx = panels.findIndex(p => p.contains(input));
         if (idx === step && step < panels.length - 1) setTimeout(() => show(step + 1), 260);
@@ -1077,9 +1112,9 @@ const FAQ = [
       const w = +wR.value, p = +pR.value;
       if (wO) wO.textContent = fmt(w);
       if (pO) pO.textContent = fmt(p);
-      // map projection 1–5 m onto 24–210 px of horizontal reach
+      // map projection 1-5 m onto 24-210 px of horizontal reach
       const reach = 24 + ((p - 1) / 4) * 186;
-      // map width 1.5–10 m onto how far the awning drops (visual weight)
+      // map width 1.5-10 m onto how far the awning drops (visual weight)
       const drop  = 22 + ((w - 1.5) / 8.5) * 26;
       if (awning) awning.setAttribute('d', `M24 22 L${reach} 22 L${reach} ${22 + drop} L24 ${22 + drop * .5} Z`);
       if (shade)  shade.setAttribute('d',  `M24 ${22 + drop * .5} L${reach} ${22 + drop} L${reach} 124 L24 124 Z`);
@@ -1090,7 +1125,7 @@ const FAQ = [
     pR?.addEventListener('input', drawDim);
     drawDim();
 
-    /* submit → mailto (no backend yet — see README) */
+    /* submit → mailto (no backend yet, see README) */
     form.addEventListener('submit', e => {
       e.preventDefault();
       const name  = $('#qName').value.trim();
@@ -1103,23 +1138,23 @@ const FAQ = [
       const body = [
         'Αίτημα για δωρεάν μέτρηση & προσφορά',
         '────────────────────────────',
-        `Τύπος:      ${d.get('type')  || '—'}`,
-        `Χώρος:      ${d.get('place') || '—'}`,
+        `Τύπος:      ${d.get('type')  || '-'}`,
+        `Χώρος:      ${d.get('place') || '-'}`,
         `Πλάτος:     ${fmt(d.get('width'))}`,
         `Προεξοχή:   ${fmt(d.get('projection'))}`,
-        `Ύφασμα:    ${chosenFabric || '— (δεν επιλέχθηκε)'}`,
+        `Ύφασμα:    ${chosenFabric || '- (δεν επιλέχθηκε)'}`,
         '',
         `Όνομα:      ${name}`,
         `Τηλέφωνο:   ${phone}`,
-        `Περιοχή:    ${d.get('area') || '—'}`,
+        `Περιοχή:    ${d.get('area') || '-'}`,
         '',
-        `Σημειώσεις: ${d.get('notes') || '—'}`,
+        `Σημειώσεις: ${d.get('notes') || '-'}`,
         '',
         'Στάλθηκε από τη φόρμα προσφοράς του site'
       ].join('\n');
 
       location.href = 'mailto:tenteskentayros@hotmail.gr'
-        + '?subject=' + encodeURIComponent(`Προσφορά: ${d.get('type') || 'τέντα'} — ${name}`)
+        + '?subject=' + encodeURIComponent(`Προσφορά: ${d.get('type') || 'τέντα'} - ${name}`)
         + '&body='    + encodeURIComponent(body);
 
       panels.forEach(p => { p.classList.remove('is-active'); p.inert = true; });
@@ -1132,15 +1167,15 @@ const FAQ = [
 }
 
 /* ==========================================================================
-   ΕΠΙΚΟΙΝΩΝΙΑ — the shop's own pin, on a dark-styled map instead of a
+   ΕΠΙΚΟΙΝΩΝΙΑ, the shop's own pin, on a dark-styled map instead of a
    default-chrome Google iframe. Google still handles turn-by-turn: the
    "Οδηγίες στον χάρτη" button next to it links straight to Maps.
    ========================================================================== */
 {
   const el = $('#map');
-  const LAT = 37.9756093, LNG = 23.7676785; // Μαικήνα 82, Ζωγράφου — geocoded off Google's own place resolution
+  const LAT = 37.9756093, LNG = 23.7676785; // Μαικήνα 82, Ζωγράφου · geocoded off Google's own place resolution
 
-  /* If Leaflet is missing or the map throws, never leave a dead grey box —
+  /* If Leaflet is missing or the map throws, never leave a dead grey box -
      an empty panel reads as a broken map (or a missing API key). Fall back to
      the address itself, which is what the map was there to tell you. */
   const fallback = () => {
@@ -1185,7 +1220,7 @@ const FAQ = [
         .addTo(map);
       L.control.zoom({ position: 'bottomright' }).addTo(map);
       /* Plain OSM tiles. CARTO's dark basemap was serving a 200 OK PNG with
-         "API KEY REQUIRED" stamped across the image itself — it looked like a
+         "API KEY REQUIRED" stamped across the image itself, it looked like a
          working map to every status check and like a broken one to every human.
          OSM needs no key; the dark treatment is done in CSS on the tile pane. */
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -1206,7 +1241,7 @@ const FAQ = [
       // so the page keeps scrolling normally until you actually mean to zoom
       el.addEventListener('click', () => map.scrollWheelZoom.enable(), { once: true });
     };
-    // Leaflet needs the container laid out before it measures tiles — wait
+    // Leaflet needs the container laid out before it measures tiles, wait
     // until the map is nearly on screen, same gate as the ambient loops. The
     // margin buys the fetch a head start so the panel is rarely seen empty.
     let started = false;
@@ -1221,7 +1256,7 @@ const FAQ = [
     const io = new IntersectionObserver(([en]) => en.isIntersecting && start(),
                                         { rootMargin: '400px' });
     io.observe(el);
-    // already in frame on arrival — otherwise this one leaves a dead grey box
+    // already in frame on arrival, otherwise this one leaves a dead grey box
     if (el.getBoundingClientRect().top < innerHeight + 400) start();
   }
 }
