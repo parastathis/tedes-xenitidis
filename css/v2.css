@@ -211,3 +211,13 @@ html { overscroll-behavior-y: none; }
 @media (max-width: 480px) {
   .hero__title { font-size: clamp(2.2rem, 10.6vw, 2.6rem); max-width: none; }
 }
+
+/* powered by stathisparas: discreet signature, bottom right of the footer */
+a.sp-sig.sp-sig{display:inline-flex!important;flex-direction:row!important;align-items:center;gap:.5em;margin:0 0 0 auto!important;padding:0!important;color:inherit;opacity:.55;text-decoration:none!important;font-size:11px!important;letter-spacing:.04em;line-height:1!important;font-weight:400;white-space:nowrap;background:none!important;border:0!important;transition:opacity .25s ease}
+a.sp-sig.sp-sig:hover,a.sp-sig.sp-sig:focus-visible{opacity:1}
+.sp-sig .sp-sig__by,.sp-sig .sp-sig__url{text-transform:none;white-space:nowrap}
+.sp-sig svg{height:20px!important;width:auto!important;max-width:none!important;display:block;flex:none;transform-origin:left center;transition:transform .35s cubic-bezier(.2,.8,.2,1)}
+a.sp-sig:hover svg{transform:rotate(-3deg) scale(1.06)}
+@media (prefers-reduced-motion:reduce){.sp-sig svg{transition:none}a.sp-sig:hover svg{transform:none}}
+.site-footer__inner .sp-sig.sp-sig{flex-basis:100%;justify-content:flex-end}
+@media (max-width:600px){a.sp-sig.sp-sig{justify-content:flex-start!important;margin-left:0!important;flex-basis:100%}}
